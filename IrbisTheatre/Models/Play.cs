@@ -8,7 +8,7 @@ public class Play
     public string Title { get; set; } = string.Empty;
     public string? Description { get; set; }
     public string? TargetAudience { get; set; }
-    public DateTimeOffset? PremiereDate { get; set; }
+    public DateTime? PremiereDate { get; set; }  // ? ИСПРАВЛЕНО: DateTime вместо DateTimeOffset
 
     // Внешние ключи
     public int AuthorId { get; set; }

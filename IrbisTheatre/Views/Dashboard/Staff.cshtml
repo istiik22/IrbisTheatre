@@ -1,0 +1,105 @@
+﻿@{
+    ViewData["Title"] = "Личный кабинет";
+    Layout = "_DashboardLayout";
+    var employer = ViewBag.Employer as IrbisTheatre.Models.Employer;
+}
+
+<div class="content-section active" id="dashboard-section">
+    <div class="dashboard-header">
+        <h2 style="font-size: 28px; margin-bottom: 8px;">Добро пожаловать, @(employer?.Fio?.Split(' ')[0] ?? "Сотрудник")!</h2>
+        <p style="color: #aaa;">Рады видеть вас в системе управления театром</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-info">
+                <h4>Сегодня</h4>
+                <div class="stat-number">@DateTime.Now.ToString("dd.MM.yyyy")</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🎭</div>
+            <div class="stat-info">
+                <h4>Моя должность</h4>
+                <div class="stat-number" style="font-size: 18px;">@(employer?.Position ?? "—")</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📧</div>
+            <div class="stat-info">
+                <h4>Email</h4>
+                <div class="stat-number" style="font-size: 14px;">@(employer?.Email ?? "—")</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 class="card-title">📋 Быстрые действия</h3>
+        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+            <button class="btn-primary" onclick="alert('График работы')">📅 График работы</button>
+            <button class="btn-outline" onclick="alert('Личные данные')">✏️ Редактировать профиль</button>
+            <button class="btn-outline" onclick="alert('Уведомления')">🔔 Уведомления</button>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top: 20px;">
+        <h3 class="card-title">ℹ️ Моя информация</h3>
+        <table class="data-table">
+            <tr><th style="width: 150px;">ФИО</th><td>@employer?.Fio</td></tr>
+            <tr><th>Должность</th><td>@employer?.Position</td></tr>
+            <tr><th>Телефон</th><td>@employer?.Contacts</td></tr>
+            <tr><th>Email</th><td>@employer?.Email</td></tr>
+            <tr><th>Статус</th><td><span class="schedule-status status-planned">@employer?.Status</span></td></tr>
+        </table>
+    </div>
+</div>
+
+<div class="content-section" id="profile-section">
+    <h2 style="font-size: 24px; margin-bottom: 20px;">👤 Мой профиль</h2>
+    <div class="card">
+        <table class="data-table">
+            <tr><th style="width: 150px;">ФИО</th><td>@employer?.Fio</td></tr>
+            <tr><th>Должность</th><td>@employer?.Position</td></tr>
+            <tr><th>Телефон</th><td>@employer?.Contacts</td></tr>
+            <tr><th>Email</th><td>@employer?.Email</td></tr>
+            <tr><th>Статус</th><td><span class="schedule-status status-planned">@employer?.Status</span></td></tr>
+        </table>
+        <button class="btn-outline" style="margin-top: 20px;" onclick="alert('Редактирование профиля')">✏️ Редактировать</button>
+    </div>
+</div>
+
+<div class="content-section" id="schedule-section">
+    <h2 style="font-size: 24px; margin-bottom: 20px;">📅 Моё расписание</h2>
+    <div class="card">
+        <p style="color: #aaa; text-align: center; padding: 40px;">Расписание загружается...</p>
+    </div>
+</div>
+
+<div class="content-section" id="settings-section">
+    <h2 style="font-size: 24px; margin-bottom: 20px;">⚙️ Настройки</h2>
+    <div class="card">
+        <div style="margin-bottom: 20px;">
+            <h4 style="margin-bottom: 10px;">Уведомления</h4>
+            <label style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox"> Получать уведомления о спектаклях
+            </label>
+        </div>
+        <button class="btn-primary">Сохранить настройки</button>
+    </div>
+</div>
+
+<script>
+    // Навигация
+    document.querySelectorAll('.sidebar-nav a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelectorAll('.sidebar-nav a').forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+
+            const section = this.dataset.section;
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(section + '-section').classList.add('active');
+        });
+    });
+</script>

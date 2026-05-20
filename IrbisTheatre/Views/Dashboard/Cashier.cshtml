@@ -1,0 +1,87 @@
+﻿@{
+    ViewData["Title"] = "Панель кассира";
+    Layout = "_DashboardLayout";
+    var performances = ViewBag.Performances as List<IrbisTheatre.Models.Performance>;
+}
+
+<div class="dashboard-header">
+    <h2>Панель кассира</h2>
+    <p>Продажа билетов и кассовые операции</p>
+</div>
+
+<div class="performances-select">
+    <h3>Выберите спектакль для продажи билетов</h3>
+    <select id="performanceSelect" class="performance-select">
+        <option value="">-- Выберите спектакль --</option>
+        @if (performances != null)
+        {
+            foreach (var perf in performances)
+            {
+                <option value="@perf.Id">
+                    @perf.Play?.Title - @perf.Datetime.ToString("dd.MM.yyyy HH:mm")
+                </option>
+            }
+        }
+    </select>
+    <button onclick="goToPurchase()" class="btn-action">Перейти к продаже</button>
+</div>
+
+<div class="quick-actions">
+    <h3>Быстрые действия</h3>
+    <div class="actions-grid">
+        <button class="action-btn" onclick="alert('Кассовый отчёт')">
+            <span>💰</span> Кассовый отчёт
+        </button>
+        <button class="action-btn" onclick="alert('Бронирования')">
+            <span>📋</span> Просмотр бронирований
+        </button>
+        <button class="action-btn" onclick="alert('Возврат билетов')">
+            <span>🔄</span> Возврат билетов
+        </button>
+    </div>
+</div>
+
+<script>
+    function goToPurchase() {
+        const select = document.getElementById('performanceSelect');
+        const perfId = select.value;
+        if (perfId) {
+            window.location.href = `/Tickets/Purchase?performanceId=${perfId}`;
+        } else {
+            alert('Выберите спектакль');
+        }
+    }
+</script>
+
+<style>
+    .performances-select {
+        background: rgba(255,255,255,0.05);
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 30px;
+    }
+
+        .performances-select h3 {
+            margin-bottom: 20px;
+            color: #7b68ee;
+        }
+
+    .performance-select {
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(123,104,238,0.3);
+        color: white;
+        margin-bottom: 15px;
+    }
+
+    .btn-action {
+        padding: 12px 25px;
+        background: linear-gradient(135deg, #4a90e2, #7b68ee);
+        border: none;
+        border-radius: 10px;
+        color: white;
+        cursor: pointer;
+    }
+</style>

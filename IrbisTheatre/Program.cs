@@ -1,14 +1,24 @@
-using IrbisTheatre;
+п»їusing IrbisTheatre;
 using IrbisTheatre.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Р”РѕР±Р°РІР»СЏРµРј СЃРµСЂРІРёСЃС‹
 builder.Services.AddControllersWithViews();
 
+// Р”РѕР±Р°РІР»СЏРµРј Р°СѓС‚РµРЅС‚РёС„РёРєР°С†РёСЋ С‡РµСЂРµР· cookies
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+        options.ExpireTimeSpan = TimeSpan.FromDays(7);
+    });
+
+// РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє PostgreSQL
 string connectionString = "Host=localhost;Port=5432;Database=IrbisTheatre;Username=admin;Password=ADMIN";
 
 builder.Services.AddDbContext<TheatreContext>(options =>
@@ -16,24 +26,40 @@ builder.Services.AddDbContext<TheatreContext>(options =>
 
 var app = builder.Build();
 
-// Инициализация базы данных и заполнение тестовыми данными
+
+// РќР°СЃС‚СЂРѕР№РєРё РґР»СЏ DateTime
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
+
+// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ Р‘Р” (С‚РѕР»СЊРєРѕ РїСЂРё РїРµСЂРІРѕРј Р·Р°РїСѓСЃРєРµ)
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<TheatreContext>();
-
-    // 1. Создаём/пересоздаём БД через DatabaseInitializer
     var dbInitializer = new DatabaseInitializer(connectionString);
-    dbInitializer.FullRecreate();  // Это создаст БД и таблицы
 
-    // 2. Заполняем тестовыми данными
-    var seeder = new TestDataSeeder(context);
-    seeder.Seed();
+    // РџСЂРѕРІРµСЂСЏРµРј, РµСЃС‚СЊ Р»Рё Р‘Р”
+    try
+    {
+        context.Database.OpenConnection();
+        context.Database.CloseConnection();
+        Console.WriteLine("Р‘Р°Р·Р° РґР°РЅРЅС‹С… СѓР¶Рµ СЃСѓС‰РµСЃС‚РІСѓРµС‚");
+    }
+    catch
+    {
+        dbInitializer.FullRecreate();
+        var seeder = new TestDataSeeder(context);
+        await seeder.SeedAsync();
+    }
 }
 
 app.UseStaticFiles();
 app.UseRouting();
+app.UseAuthentication();  // Р’РђР–РќРћ: РїРѕСЂСЏРґРѕРє РІР°Р¶РµРЅ!
+app.UseAuthorization();
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapControllers();  // рџ‘€ Р­РўРћ Р’РђР–РќРћ Р”Р›РЇ API
 
 app.Run();

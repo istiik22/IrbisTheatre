@@ -9,10 +9,10 @@ namespace IrbisTheatre.Models;
 
 public class TheatreContext : DbContext
 {
-    public TheatreContext(DbContextOptions<TheatreContext> options)
-        : base(options)
+    public TheatreContext(DbContextOptions<TheatreContext> options) : base(options)
     {
-        
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+        AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
     }
 
     // DbSet для каждой таблицы
@@ -165,5 +165,7 @@ public class TheatreContext : DbContext
             .OnDelete(DeleteBehavior.Cascade);
 
         base.OnModelCreating(modelBuilder);
+
+
     }
 }

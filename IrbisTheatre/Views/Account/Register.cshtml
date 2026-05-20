@@ -1,0 +1,296 @@
+﻿@model RegisterViewModel
+@{
+    ViewData["Title"] = "Регистрация сотрудника";
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - Театр "Irbis"</title>
+    <link rel="stylesheet" href="~/css/stars.css">
+    <link rel="stylesheet" href="~/css/main.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 20px;
+        }
+
+        .auth-card {
+            background: rgba(26, 26, 74, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(123, 104, 238, 0.5);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .auth-title {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #4a90e2, #7b68ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 8px;
+                color: #ccc;
+                font-weight: 500;
+            }
+
+            .form-group input, .form-group select {
+                width: 100%;
+                padding: 12px 15px;
+                border-radius: 10px;
+                border: 1px solid rgba(123, 104, 238, 0.3);
+                background: rgba(255, 255, 255, 0.1);
+                color: white;
+                font-size: 16px;
+            }
+
+                .form-group input:focus, .form-group select:focus {
+                    outline: none;
+                    border-color: #7b68ee;
+                    box-shadow: 0 0 10px rgba(123, 104, 238, 0.5);
+                }
+
+                .form-group select option {
+                    background: #1a1a4a;
+                }
+
+        .verify-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+            .verify-group input {
+                flex: 1;
+            }
+
+        .btn-verify {
+            padding: 12px 20px;
+            background: transparent;
+            border: 1px solid #7b68ee;
+            border-radius: 10px;
+            color: #7b68ee;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+            .btn-verify:hover {
+                background: rgba(123, 104, 238, 0.2);
+            }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .checkbox-group input {
+                width: auto;
+            }
+
+        .btn-auth {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #4a90e2, #7b68ee);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+            .btn-auth:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 20px rgba(123, 104, 238, 0.5);
+            }
+
+        .auth-links {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+            .auth-links a {
+                color: #7b68ee;
+                text-decoration: none;
+            }
+
+        .validation-summary-errors {
+            background: rgba(255, 71, 87, 0.2);
+            border: 1px solid #ff4757;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 20px;
+            color: #ff6b7c;
+        }
+
+        .validation-summary-valid {
+            display: none;
+        }
+
+        .field-validation-error {
+            color: #ff4757;
+            font-size: 12px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .text-danger {
+            color: #ff4757;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <h1 class="auth-title">Регистрация сотрудника</h1>
+
+            <div asp-validation-summary="All" class="validation-summary-errors"></div>
+
+            <form asp-action="Register" asp-controller="Account" method="post" id="registerForm">
+                <div class="form-group">
+                    <label asp-for="FullName">ФИО *</label>
+                    <input asp-for="FullName" class="form-control" required placeholder="Иванов Иван Иванович">
+                    <span asp-validation-for="FullName" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Email">Email (корпоративный) *</label>
+                    <input asp-for="Email" type="email" class="form-control" required placeholder="ivanov@irbis-theatre.ru" id="Email">
+                    <span asp-validation-for="Email" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Phone">Номер телефона *</label>
+                    <input asp-for="Phone" type="tel" class="form-control" required placeholder="+7 (999) 123-45-67">
+                    <span asp-validation-for="Phone" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Position">Должность *</label>
+                    <select asp-for="Position" class="form-control" required>
+                        <option value="">Выберите должность</option>
+                        <option value="admin">Администратор</option>
+                        <option value="director">Директор</option>
+                        <option value="cashier">Кассир</option>
+                        <option value="actor">Актёр</option>
+                        <option value="musician">Музыкант</option>
+                        <option value="staff">Служащий</option>
+                    </select>
+                    <span asp-validation-for="Position" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Department">Отдел *</label>
+                    <select asp-for="Department" class="form-control" required>
+                        <option value="">Выберите отдел</option>
+                        <option value="acting">Актёрская труппа</option>
+                        <option value="music">Музыканты</option>
+                        <option value="production">Постановочная часть</option>
+                        <option value="administration">Администрация</option>
+                        <option value="cashier">Касса</option>
+                        <option value="technical">Технический отдел</option>
+                        <option value="other">Другой отдел</option>
+                    </select>
+                    <span asp-validation-for="Department" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Password">Пароль *</label>
+                    <input asp-for="Password" type="password" class="form-control" required placeholder="Минимум 6 символов">
+                    <span asp-validation-for="Password" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="ConfirmPassword">Подтверждение пароля *</label>
+                    <input asp-for="ConfirmPassword" type="password" class="form-control" required>
+                    <span asp-validation-for="ConfirmPassword" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="VerificationCode">Код подтверждения</label>
+                    <div class="verify-group">
+                        <input asp-for="VerificationCode" type="text" class="form-control" placeholder="6-значный код" required>
+                        <button type="button" class="btn-verify" id="sendCodeBtn">Получить код</button>
+                    </div>
+                    <span asp-validation-for="VerificationCode" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <input asp-for="IsEmployee" required>
+                    <label asp-for="IsEmployee">Подтверждаю, что являюсь сотрудником театра "Ирбис"</label>
+                    <span asp-validation-for="IsEmployee" class="field-validation-error"></span>
+                </div>
+
+                <button type="submit" class="btn-auth">Зарегистрироваться</button>
+            </form>
+
+            <div class="auth-links">
+                <a href="@Url.Action("Login", "Account")">Уже есть аккаунт? Войти</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Проверка корпоративного email
+        function isValidCorporateEmail(email) {
+            return email && email.toLowerCase().includes('irbis-theatre.ru');
+        }
+
+        // Отправка кода подтверждения
+        document.getElementById('sendCodeBtn')?.addEventListener('click', function() {
+            const email = document.getElementById('Email').value;
+
+            if (!email) {
+                alert('Введите email');
+                return;
+            }
+
+            if (!isValidCorporateEmail(email)) {
+                alert(`Используйте корпоративную почту irbis-theatre.ru`);
+                return;
+            }
+
+            // Отправляем запрос на сервер
+            fetch('/Account/SendVerificationCode', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(email)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`Ваш код подтверждения: ${data.code}\nВведите его в поле "Код подтверждения".`);
+                } else {
+                    alert(data.message || 'Ошибка отправки кода');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Ошибка отправки кода. Попробуйте позже.');
+            });
+        });
+    </script>
+</body>
+</html>

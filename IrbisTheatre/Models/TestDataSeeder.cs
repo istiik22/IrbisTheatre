@@ -1,4 +1,5 @@
-using IrbisTheatre.Models;
+п»їusing IrbisTheatre.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace IrbisTheatre;
 
@@ -11,76 +12,84 @@ public class TestDataSeeder
         _context = context;
     }
 
-    public void Seed()
+    public async Task SeedAsync()
     {
-        if (_context.Authors.Any())
+        if (await _context.Authors.AnyAsync())
         {
-            Console.WriteLine("Данные уже существуют, пропускаем заполнение...");
+            Console.WriteLine("Р”Р°РЅРЅС‹Рµ СѓР¶Рµ СЃСѓС‰РµСЃС‚РІСѓСЋС‚, РїСЂРѕРїСѓСЃРєР°РµРј Р·Р°РїРѕР»РЅРµРЅРёРµ...");
             return;
         }
 
-        Console.WriteLine("Начинаем заполнение тестовыми данными...");
+        Console.WriteLine("РќР°С‡РёРЅР°РµРј Р·Р°РїРѕР»РЅРµРЅРёРµ С‚РµСЃС‚РѕРІС‹РјРё РґР°РЅРЅС‹РјРё...");
 
+        // ================================================================
+        // 1. РђР’РўРћР Р« (РѕСЃРµС‚РёРЅСЃРєРёРµ Рё РєР°РІРєР°Р·СЃРєРёРµ)
+        // ================================================================
         var authors = new List<Author>
         {
-            new Author { Fio = "Михаил Юрьевич Лермонтов", Country = "Россия", YearsOfLife = "1814-1841",
-                Biography = "Русский поэт, прозаик, драматург. Много писал о Кавказе, где служил и воевал." },
-            new Author { Fio = "Александр Сергеевич Грибоедов", Country = "Россия", YearsOfLife = "1795-1829",
-                Biography = "Русский дипломат, поэт, драматург. Автор 'Горя от ума'. Служил на Кавказе и погиб в Тегеране." },
-            new Author { Fio = "Лев Николаевич Толстой", Country = "Россия", YearsOfLife = "1828-1910",
-                Biography = "Великий русский писатель. Служил на Кавказе, написал 'Кавказского пленника' и 'Хаджи-Мурата'." },
-            new Author { Fio = "Фазу Алиева", Country = "Дагестан", YearsOfLife = "1932-2016",
-                Biography = "Известная дагестанская поэтесса, писала на аварском и русском языках." },
-            new Author { Fio = "Расул Гамзатов", Country = "Дагестан", YearsOfLife = "1923-2003",
-                Biography = "Великий аварский поэт, автор знаменитых 'Журавлей'." },
-            new Author { Fio = "Коста Хетагуров", Country = "Осетия", YearsOfLife = "1859-1906",
-                Biography = "Основоположник осетинской литературы, поэт, художник, просветитель." },
-            
-            new Author { Fio = "Антон Павлович Чехов", Country = "Россия", YearsOfLife = "1860-1904",
-                Biography = "Великий русский писатель, драматург, врач по образованию." },
-            new Author { Fio = "Николай Васильевич Гоголь", Country = "Россия", YearsOfLife = "1809-1852",
-                Biography = "Русский прозаик, драматург, поэт, критик, публицист." },
-            new Author { Fio = "Фёдор Михайлович Достоевский", Country = "Россия", YearsOfLife = "1821-1881",
-                Biography = "Великий русский писатель, мыслитель, философ." },
-            new Author { Fio = "Уильям Шекспир", Country = "Англия", YearsOfLife = "1564-1616",
-                Biography = "Английский поэт и драматург, величайший писатель в мировой литературе." }
+            new Author { Fio = "РљРѕСЃС‚Р° Р›РµРІР°РЅРѕРІРёС‡ РҐРµС‚Р°РіСѓСЂРѕРІ", Country = "РћСЃРµС‚РёСЏ", YearsOfLife = "1859-1906",
+                Biography = "РћСЃРЅРѕРІРѕРїРѕР»РѕР¶РЅРёРє РѕСЃРµС‚РёРЅСЃРєРѕР№ Р»РёС‚РµСЂР°С‚СѓСЂС‹, РїРѕСЌС‚, С…СѓРґРѕР¶РЅРёРє, РїСЂРѕСЃРІРµС‚РёС‚РµР»СЊ. РџРёСЃР°Р» РЅР° РѕСЃРµС‚РёРЅСЃРєРѕРј Рё СЂСѓСЃСЃРєРѕРј СЏР·С‹РєР°С…." },
+            new Author { Fio = "РђСЂСЃРµРЅ Р‘РѕСЂРёСЃРѕРІРёС‡ РљРѕС†РѕРµРІ", Country = "РћСЃРµС‚РёСЏ", YearsOfLife = "1872-1944",
+                Biography = "РћСЃРµС‚РёРЅСЃРєРёР№ РїРёСЃР°С‚РµР»СЊ, РґСЂР°РјР°С‚СѓСЂРі, РѕСЃРЅРѕРІРѕРїРѕР»РѕР¶РЅРёРє РѕСЃРµС‚РёРЅСЃРєРѕР№ РґСЂР°РјР°С‚СѓСЂРіРёРё." },
+            new Author { Fio = "Р“РµРѕСЂРіРёР№ РњРµСЂРєСѓР»РѕРІРёС‡ Р¦Р°РіРѕР»РѕРІ", Country = "РћСЃРµС‚РёСЏ", YearsOfLife = "1888-1939",
+                Biography = "РћСЃРµС‚РёРЅСЃРєРёР№ РїРёСЃР°С‚РµР»СЊ, РїРѕСЌС‚, РґСЂР°РјР°С‚СѓСЂРі, РѕРґРёРЅ РёР· Р·Р°С‡РёРЅР°С‚РµР»РµР№ РѕСЃРµС‚РёРЅСЃРєРѕР№ Р»РёС‚РµСЂР°С‚СѓСЂС‹." },
+            new Author { Fio = "Р”Р·Р°С…Рѕ РђР»РµРєСЃРµРµРІРёС‡ Р“Р°С‚СѓРµРІ", Country = "РћСЃРµС‚РёСЏ", YearsOfLife = "1865-1938",
+                Biography = "РћСЃРµС‚РёРЅСЃРєРёР№ РїРѕСЌС‚, РїСЂРѕР·Р°РёРє, РґСЂР°РјР°С‚СѓСЂРі Рё РїСѓР±Р»РёС†РёСЃС‚." },
+            new Author { Fio = "Р•РІРіРµРЅРёР№ РРІР°РЅРѕРІРёС‡ РЈСЂСѓР№РјР°РіРѕРІР°", Country = "РћСЃРµС‚РёСЏ", YearsOfLife = "1904-1985",
+                Biography = "РћСЃРµС‚РёРЅСЃРєР°СЏ РїРёСЃР°С‚РµР»СЊРЅРёС†Р°, Р°РІС‚РѕСЂ Р·РЅР°РјРµРЅРёС‚РѕРіРѕ СЂРѕРјР°РЅР° 'РЎРѕСЃР»Р°РЅ Рё РљСЂРёСЃС‚РёРЅР°'." },
+            new Author { Fio = "РњРёС…Р°РёР» Р®СЂСЊРµРІРёС‡ Р›РµСЂРјРѕРЅС‚РѕРІ", Country = "Р РѕСЃСЃРёСЏ", YearsOfLife = "1814-1841",
+                Biography = "Р СѓСЃСЃРєРёР№ РїРѕСЌС‚, РїСЂРѕР·Р°РёРє, РґСЂР°РјР°С‚СѓСЂРі. РњРЅРѕРіРѕ РїРёСЃР°Р» Рѕ РљР°РІРєР°Р·Рµ." },
+            new Author { Fio = "Р›РµРІ РќРёРєРѕР»Р°РµРІРёС‡ РўРѕР»СЃС‚РѕР№", Country = "Р РѕСЃСЃРёСЏ", YearsOfLife = "1828-1910",
+                Biography = "Р’РµР»РёРєРёР№ СЂСѓСЃСЃРєРёР№ РїРёСЃР°С‚РµР»СЊ. РЎР»СѓР¶РёР» РЅР° РљР°РІРєР°Р·Рµ." },
+            new Author { Fio = "РЈРёР»СЊСЏРј РЁРµРєСЃРїРёСЂ", Country = "РђРЅРіР»РёСЏ", YearsOfLife = "1564-1616",
+                Biography = "РђРЅРіР»РёР№СЃРєРёР№ РїРѕСЌС‚ Рё РґСЂР°РјР°С‚СѓСЂРі." }
         };
         _context.Authors.AddRange(authors);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
+        // ================================================================
+        // 2. Р–РђРќР Р«
+        // ================================================================
         var genres = new List<Genre>
         {
-            new Genre { Name = "Драма" },
-            new Genre { Name = "Комедия" },
-            new Genre { Name = "Трагедия" },
-            new Genre { Name = "Мелодрама" },
-            new Genre { Name = "Сатира" },
-            new Genre { Name = "Трагикомедия" },
-            new Genre { Name = "Притча" },
-            new Genre { Name = "Поэтическая драма" }
+            new Genre { Name = "Р”СЂР°РјР°" },
+            new Genre { Name = "РљРѕРјРµРґРёСЏ" },
+            new Genre { Name = "РўСЂР°РіРµРґРёСЏ" },
+            new Genre { Name = "РњРµР»РѕРґСЂР°РјР°" },
+            new Genre { Name = "РЎР°С‚РёСЂР°" },
+            new Genre { Name = "РўСЂР°РіРёРєРѕРјРµРґРёСЏ" },
+            new Genre { Name = "РџСЂРёС‚С‡Р°" },
+            new Genre { Name = "РџРѕСЌС‚РёС‡РµСЃРєР°СЏ РґСЂР°РјР°" },
+            new Genre { Name = "РСЃС‚РѕСЂРёС‡РµСЃРєР°СЏ РґСЂР°РјР°" },
+            new Genre { Name = "Р›РёСЂРёС‡РµСЃРєР°СЏ РєРѕРјРµРґРёСЏ" }
         };
         _context.Genres.AddRange(genres);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
+        // ================================================================
+        // 3. Р—РђР›Р«
+        // ================================================================
         var halls = new List<Hall>
         {
-            new Hall { Name = "Большая сцена" },
-            new Hall { Name = "Малая сцена" },
-            new Hall { Name = "Камерный зал" },
-            new Hall { Name = "Зимний сад" }
+            new Hall { Name = "Р‘РѕР»СЊС€РѕР№ Р·Р°Р» РёРј. РљРѕСЃС‚Р° РҐРµС‚Р°РіСѓСЂРѕРІР°" },
+            new Hall { Name = "РњР°Р»С‹Р№ Р·Р°Р» 'РќР°СЂС‚'" },
+            new Hall { Name = "РљР°РјРµСЂРЅС‹Р№ Р·Р°Р» 'РђРјРѕРЅРґ'" },
+            new Hall { Name = "Р—РёРјРЅРёР№ СЃР°Рґ 'РЎС‚С‹СЂ РќС‹С…Р°СЃ'" }
         };
         _context.Halls.AddRange(halls);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
+        // ================================================================
+        // 4. РњР•РЎРўРђ Р’ Р—РђР›РђРҐ
+        // ================================================================
         var seats = new List<Seat>();
-
         foreach (var hall in halls)
         {
-            for (short row = 1; row <= 5; row++)
+            for (short row = 1; row <= 8; row++)
             {
-                for (short seatNum = 1; seatNum <= 10; seatNum++)
+                for (short seatNum = 1; seatNum <= 12; seatNum++)
                 {
-                    string category = row <= 2 ? "Партер" : row <= 4 ? "Бельэтаж" : "Балкон";
+                    string category = row <= 2 ? "РџР°СЂС‚РµСЂ-Р»СЋРєСЃ" : row <= 4 ? "РџР°СЂС‚РµСЂ" : row <= 6 ? "Р‘РµР»СЊСЌС‚Р°Р¶" : "Р‘Р°Р»РєРѕРЅ";
                     seats.Add(new Seat
                     {
                         RowNumber = row,
@@ -92,275 +101,422 @@ public class TestDataSeeder
             }
         }
         _context.Seats.AddRange(seats);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
+        // ================================================================
+        // 5. РЎРџР•РљРўРђРљР›Р (РѕСЃРµС‚РёРЅСЃРєР°СЏ С‚РµРјР°С‚РёРєР°)
+        // ================================================================
         var plays = new List<Play>
         {
+            // РћСЃРµС‚РёРЅСЃРєРёРµ СЃРїРµРєС‚Р°РєР»Рё
             new Play
             {
-                Title = "Мцыри",
-                Description = "Поэма о юном послушнике, который сбегает из монастыря в горы Кавказа, чтобы обрести свободу. За три дня он проживает целую жизнь, полную опасностей, любви к природе и борьбы с барсом.",
+                Title = "Р”СѓРЅСЏ (Р¤Р°С‚РёРјР°)",
+                Description = "РўСЂР°РіРµРґРёСЏ РѕСЃРµС‚РёРЅСЃРєРѕР№ РґРµРІСѓС€РєРё, СЂР°Р·СЂС‹РІР°СЋС‰РµР№СЃСЏ РјРµР¶РґСѓ Р»СЋР±РѕРІСЊСЋ Рё РґРѕР»РіРѕРј РїРµСЂРµРґ СЃРµРјСЊРµР№ Рё РЅР°СЂРѕРґРѕРј. РљР»Р°СЃСЃРёРєР° РѕСЃРµС‚РёРЅСЃРєРѕР№ Р»РёС‚РµСЂР°С‚СѓСЂС‹.",
+                TargetAudience = "16+",
+                PremiereDate = new DateTime(2024, 10, 15),
+                AuthorId = authors.First(a => a.Fio.Contains("РҐРµС‚Р°РіСѓСЂРѕРІ")).Id,
+                GenreId = genres.First(g => g.Name == "РўСЂР°РіРµРґРёСЏ").Id
+            },
+            new Play
+            {
+                Title = "РЎРѕСЃР»Р°РЅ Рё РљСЂРёСЃС‚РёРЅР°",
+                Description = "Р—РЅР°РјРµРЅРёС‚С‹Р№ СЂРѕРјР°РЅ Рѕ Р»СЋР±РІРё РѕСЃРµС‚РёРЅСЃРєРѕРіРѕ РЅР°СЂС‚Р° РЎРѕСЃР»Р°РЅР° Рё СЂСѓСЃСЃРєРѕР№ РґРµРІСѓС€РєРё РљСЂРёСЃС‚РёРЅС‹, РїРµСЂРµРїР»РµС‚РµРЅРёРµ СЃСѓРґРµР± Рё РєСѓР»СЊС‚СѓСЂ.",
+                TargetAudience = "12+",
+                PremiereDate = new DateTime(2024, 12, 1),
+                AuthorId = authors.First(a => a.Fio.Contains("РЈСЂСѓР№РјР°РіРѕРІР°")).Id,
+                GenreId = genres.First(g => g.Name == "Р”СЂР°РјР°").Id
+            },
+            new Play
+            {
+                Title = "РўР°СЂР°РЅРґР¶РµР»РѕР·",
+                Description = "РљРѕРјРµРґРёСЏ Рѕ РїРѕС…РѕР¶РґРµРЅРёСЏС… РіРµСЂРѕСЏ РѕСЃРµС‚РёРЅСЃРєРѕРіРѕ С„РѕР»СЊРєР»РѕСЂР°, РїРѕР»РЅР°СЏ СЋРјРѕСЂР° Рё РЅР°СЂРѕРґРЅРѕР№ РјСѓРґСЂРѕСЃС‚Рё.",
+                TargetAudience = "6+",
+                PremiereDate = new DateTime(2024, 11, 20),
+                AuthorId = authors.First(a => a.Fio.Contains("РљРѕС†РѕРµРІ")).Id,
+                GenreId = genres.First(g => g.Name == "РљРѕРјРµРґРёСЏ").Id
+            },
+            new Play
+            {
+                Title = "РҐР°Р·Р±Рё",
+                Description = "Р”СЂР°РјР° Рѕ СЃСѓРґСЊР±Рµ РіРѕСЂС†Р°, РµРіРѕ Р»СЋР±РІРё Рё С‚СЂР°РіРёС‡РµСЃРєРѕРј РІС‹Р±РѕСЂРµ РјРµР¶РґСѓ С‡РµСЃС‚СЊСЋ Рё СЃРІРѕР±РѕРґРѕР№.",
+                TargetAudience = "16+",
+                PremiereDate = new DateTime(2025, 1, 15),
+                AuthorId = authors.First(a => a.Fio.Contains("Р¦Р°РіРѕР»РѕРІ")).Id,
+                GenreId = genres.First(g => g.Name == "РўСЂР°РіРµРґРёСЏ").Id
+            },
+            new Play
+            {
+                Title = "РќР°СЂС‚ РЎРѕСЃР»Р°РЅ",
+                Description = "Р­РїРёС‡РµСЃРєРѕРµ СЃРєР°Р·Р°РЅРёРµ Рѕ РІРµР»РёРєРѕРј РЅР°СЂС‚СЃРєРѕРј РіРµСЂРѕРµ, РµРіРѕ РїРѕРґРІРёРіР°С… Рё Р»СЋР±РІРё Рє РїСЂРµРєСЂР°СЃРЅРѕР№ РљРѕСЃРµСЂ.",
+                TargetAudience = "6+",
+                PremiereDate = new DateTime(2024, 9, 5),
+                AuthorId = authors.First(a => a.Fio.Contains("Р“Р°С‚СѓРµРІ")).Id,
+                GenreId = genres.First(g => g.Name == "РџРѕСЌС‚РёС‡РµСЃРєР°СЏ РґСЂР°РјР°").Id
+            },
+            new Play
+            {
+                Title = "Р—Р°Р»РёРЅРєР°",
+                Description = "Р›РёСЂРёС‡РµСЃРєР°СЏ РёСЃС‚РѕСЂРёСЏ Рѕ РїРµСЂРІРѕР№ Р»СЋР±РІРё, СЂР°СЃС†РІРµС‚Р°СЋС‰РµР№ РІ РіРѕСЂР°С… РљР°РІРєР°Р·Р°. РќРµР¶РЅР°СЏ Рё С‚СЂРѕРіР°С‚РµР»СЊРЅР°СЏ РєРѕРјРµРґРёСЏ.",
+                TargetAudience = "6+",
+                PremiereDate = new DateTime(2024, 8, 20),
+                AuthorId = authors.First(a => a.Fio.Contains("РљРѕС†РѕРµРІ")).Id,
+                GenreId = genres.First(g => g.Name == "Р›РёСЂРёС‡РµСЃРєР°СЏ РєРѕРјРµРґРёСЏ").Id
+            },
+            new Play
+            {
+                Title = "РњС†С‹СЂРё",
+                Description = "РџРѕСЌРјР° Рѕ СЋРЅРѕРј РїРѕСЃР»СѓС€РЅРёРєРµ, РєРѕС‚РѕСЂС‹Р№ СЃР±РµРіР°РµС‚ РёР· РјРѕРЅР°СЃС‚С‹СЂСЏ РІ РіРѕСЂС‹ РљР°РІРєР°Р·Р°, С‡С‚РѕР±С‹ РѕР±СЂРµСЃС‚Рё СЃРІРѕР±РѕРґСѓ.",
                 TargetAudience = "12+",
                 PremiereDate = new DateTime(2024, 3, 15),
-                AuthorId = authors.First(a => a.Fio.Contains("Лермонтов")).Id,
-                GenreId = genres.First(g => g.Name == "Поэтическая драма").Id
+                AuthorId = authors.First(a => a.Fio.Contains("Р›РµСЂРјРѕРЅС‚РѕРІ")).Id,
+                GenreId = genres.First(g => g.Name == "РџРѕСЌС‚РёС‡РµСЃРєР°СЏ РґСЂР°РјР°").Id
             },
             new Play
             {
-                Title = "Герой нашего времени",
-                Description = "История 'лишнего человека' Григория Печорина, его любовных приключений и дуэлей на Кавказе. Психологический портрет молодого человека 19 века.",
-                TargetAudience = "16+",
-                PremiereDate = new DateTime(2024, 5, 20),
-                AuthorId = authors.First(a => a.Fio.Contains("Лермонтов")).Id,
-                GenreId = genres.First(g => g.Name == "Драма").Id
-            },
-            new Play
-            {
-                Title = "Горе от ума (Кавказская история)",
-                Description = "Знаменитая комедия о столкновении 'века нынешнего' и 'века минувшего', перенесенная на кавказскую почву. Чацкий возвращается на Кавказ и сталкивается с местным 'фамусовским' обществом.",
-                TargetAudience = "12+",
-                PremiereDate = new DateTime(2024, 7, 10),
-                AuthorId = authors.First(a => a.Fio.Contains("Грибоедов")).Id,
-                GenreId = genres.First(g => g.Name == "Комедия").Id
-            },
-            new Play
-            {
-                Title = "Кавказский пленник",
-                Description = "История русского офицера Жилина, который попадает в плен к горцам. О смелости, дружбе и взаимопомощи, преодолевающей национальные барьеры.",
+                Title = "РљР°РІРєР°Р·СЃРєРёР№ РїР»РµРЅРЅРёРє",
+                Description = "РСЃС‚РѕСЂРёСЏ СЂСѓСЃСЃРєРѕРіРѕ РѕС„РёС†РµСЂР° Р–РёР»РёРЅР°, РєРѕС‚РѕСЂС‹Р№ РїРѕРїР°РґР°РµС‚ РІ РїР»РµРЅ Рє РіРѕСЂС†Р°Рј.",
                 TargetAudience = "6+",
                 PremiereDate = new DateTime(2024, 2, 1),
-                AuthorId = authors.First(a => a.Fio.Contains("Толстой")).Id,
-                GenreId = genres.First(g => g.Name == "Драма").Id
+                AuthorId = authors.First(a => a.Fio.Contains("РўРѕР»СЃС‚РѕР№")).Id,
+                GenreId = genres.First(g => g.Name == "Р”СЂР°РјР°").Id
             },
             new Play
             {
-                Title = "Хаджи-Мурат",
-                Description = "История легендарного аварского наиба, перешедшего на сторону русских. Трагедия о выборе между честью и предательством, о цене свободы.",
-                TargetAudience = "18+",
-                PremiereDate = new DateTime(2025, 1, 25),
-                AuthorId = authors.First(a => a.Fio.Contains("Толстой")).Id,
-                GenreId = genres.First(g => g.Name == "Трагедия").Id
-            },
-            new Play
-            {
-                Title = "Журавли",
-                Description = "Поэтическая притча о войне, памяти и братстве народов Кавказа. Основано на знаменитом стихотворении Расула Гамзатова.",
-                TargetAudience = "6+",
-                PremiereDate = new DateTime(2024, 5, 9),
-                AuthorId = authors.First(a => a.Fio.Contains("Гамзатов")).Id,
-                GenreId = genres.First(g => g.Name == "Притча").Id
-            },
-            new Play
-            {
-                Title = "Сын гор",
-                Description = "Драма о жизни дагестанского горца, его любви к родине и трагической судьбе в современном мире. По произведениям Фазу Алиевой.",
-                TargetAudience = "12+",
-                PremiereDate = new DateTime(2024, 10, 15),
-                AuthorId = authors.First(a => a.Fio.Contains("Алиева")).Id,
-                GenreId = genres.First(g => g.Name == "Драма").Id
-            },
-            new Play
-            {
-                Title = "Фатима",
-                Description = "Трагедия осетинской девушки, разрывающейся между любовью и долгом перед семьей и народом. Классика осетинской литературы.",
-                TargetAudience = "16+",
-                PremiereDate = new DateTime(2024, 12, 1),
-                AuthorId = authors.First(a => a.Fio.Contains("Хетагуров")).Id,
-                GenreId = genres.First(g => g.Name == "Трагедия").Id
-            },
-            
-            new Play
-            {
-                Title = "Вишневый сад",
-                Description = "Последняя пьеса Чехова о дворянском гнезде, которое уходит в прошлое. Лирическая комедия о потерях и надеждах.",
-                TargetAudience = "12+",
-                PremiereDate = new DateTime(2024, 9, 1),
-                AuthorId = authors.First(a => a.Fio.Contains("Чехов")).Id,
-                GenreId = genres.First(g => g.Name == "Комедия").Id
-            },
-            new Play
-            {
-                Title = "Ревизор",
-                Description = "Знаменитая сатирическая комедия о чиновниках уездного города, принявших мелкого вора за важного ревизора.",
-                TargetAudience = "12+",
-                PremiereDate = new DateTime(2024, 4, 1),
-                AuthorId = authors.First(a => a.Fio.Contains("Гоголь")).Id,
-                GenreId = genres.First(g => g.Name == "Сатира").Id
-            },
-            new Play
-            {
-                Title = "Преступление и наказание",
-                Description = "Инсценировка романа Достоевского о студенте Раскольникове, который проверяет теорию о 'право имеющих' на себе.",
-                TargetAudience = "18+",
-                PremiereDate = new DateTime(2024, 11, 20),
-                AuthorId = authors.First(a => a.Fio.Contains("Достоевский")).Id,
-                GenreId = genres.First(g => g.Name == "Драма").Id
-            },
-            new Play
-            {
-                Title = "Гамлет",
-                Description = "Бессмертная трагедия Шекспира о датском принце, который пытается отомстить за убийство отца.",
+                Title = "Р“Р°РјР»РµС‚",
+                Description = "Р‘РµСЃСЃРјРµСЂС‚РЅР°СЏ С‚СЂР°РіРµРґРёСЏ РЁРµРєСЃРїРёСЂР° Рѕ РґР°С‚СЃРєРѕРј РїСЂРёРЅС†Рµ, РїРµСЂРµРЅРµСЃС‘РЅРЅР°СЏ РЅР° РєР°РІРєР°Р·СЃРєСѓСЋ РїРѕС‡РІСѓ.",
                 TargetAudience = "16+",
                 PremiereDate = new DateTime(2024, 8, 15),
-                AuthorId = authors.First(a => a.Fio.Contains("Шекспир")).Id,
-                GenreId = genres.First(g => g.Name == "Трагедия").Id
+                AuthorId = authors.First(a => a.Fio.Contains("РЁРµРєСЃРїРёСЂ")).Id,
+                GenreId = genres.First(g => g.Name == "РўСЂР°РіРµРґРёСЏ").Id
             }
         };
         _context.Plays.AddRange(plays);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
+        // ================================================================
+        // 6. Р РћР›Р Р’ РЎРџР•РљРўРђРљР›РЇРҐ
+        // ================================================================
         var roles = new List<Role>();
 
-        var mtsyri = plays.First(p => p.Title == "Мцыри");
+        // Р РѕР»Рё РґР»СЏ "Р”СѓРЅСЏ (Р¤Р°С‚РёРјР°)"
+        var fatima = plays.First(p => p.Title.Contains("Р”СѓРЅСЏ"));
         roles.AddRange(new[]
         {
-            new Role { Name = "Мцыри", GenderRequirement = "male", AgeRange = "16-25", VoiceRequirements = "тенор, эмоциональный", PlayId = mtsyri.Id },
-            new Role { Name = "Старый монах", GenderRequirement = "male", AgeRange = "50-70", VoiceRequirements = "бас, размеренный", PlayId = mtsyri.Id },
-            new Role { Name = "Грузинка", GenderRequirement = "female", AgeRange = "18-25", VoiceRequirements = "сопрано, нежное", PlayId = mtsyri.Id },
-            new Role { Name = "Барс", GenderRequirement = "any", AgeRange = "25-40", VoiceRequirements = "сильный, звериный", PlayId = mtsyri.Id }
+            new Role { Name = "Р¤Р°С‚РёРјР°", GenderRequirement = "female", AgeRange = "20-30", VoiceRequirements = "РґСЂР°РјР°С‚РёС‡РµСЃРєРѕРµ СЃРѕРїСЂР°РЅРѕ", PlayId = fatima.Id },
+            new Role { Name = "Р‘Р°С‚СЂР°РґР·", GenderRequirement = "male", AgeRange = "25-35", VoiceRequirements = "Р±Р°СЂРёС‚РѕРЅ", PlayId = fatima.Id },
+            new Role { Name = "РњР°С‚СЊ Р¤Р°С‚РёРјС‹", GenderRequirement = "female", AgeRange = "45-60", VoiceRequirements = "РєРѕРЅС‚СЂР°Р»СЊС‚Рѕ", PlayId = fatima.Id },
+            new Role { Name = "РљРЅСЏР·СЊ", GenderRequirement = "male", AgeRange = "40-55", VoiceRequirements = "Р±Р°СЃ", PlayId = fatima.Id }
         });
 
-        var prisoner = plays.First(p => p.Title == "Кавказский пленник");
+        // Р РѕР»Рё РґР»СЏ "РќР°СЂС‚ РЎРѕСЃР»Р°РЅ"
+        var soslan = plays.First(p => p.Title.Contains("РќР°СЂС‚ РЎРѕСЃР»Р°РЅ"));
         roles.AddRange(new[]
         {
-            new Role { Name = "Жилин", GenderRequirement = "male", AgeRange = "30-45", VoiceRequirements = "баритон, уверенный", PlayId = prisoner.Id },
-            new Role { Name = "Костылин", GenderRequirement = "male", AgeRange = "30-45", VoiceRequirements = "тенор, трусливый", PlayId = prisoner.Id },
-            new Role { Name = "Дина", GenderRequirement = "female", AgeRange = "13-16", VoiceRequirements = "сопрано, звонкое", PlayId = prisoner.Id },
-            new Role { Name = "Абдул-Мурат", GenderRequirement = "male", AgeRange = "40-55", VoiceRequirements = "бас, властный", PlayId = prisoner.Id }
+            new Role { Name = "РЎРѕСЃР»Р°РЅ", GenderRequirement = "male", AgeRange = "25-40", VoiceRequirements = "С‚РµРЅРѕСЂ, РіРµСЂРѕРёС‡РµСЃРєРёР№", PlayId = soslan.Id },
+            new Role { Name = "РљРѕСЃРµСЂ", GenderRequirement = "female", AgeRange = "20-30", VoiceRequirements = "Р»РёСЂРёС‡РµСЃРєРѕРµ СЃРѕРїСЂР°РЅРѕ", PlayId = soslan.Id },
+            new Role { Name = "РЈСЂС‹Р·РјР°Рі", GenderRequirement = "male", AgeRange = "50-65", VoiceRequirements = "Р±Р°СЃ, РјСѓРґСЂС‹Р№", PlayId = soslan.Id },
+            new Role { Name = "РЁР°С‚Р°РЅР°", GenderRequirement = "female", AgeRange = "40-55", VoiceRequirements = "РјРµС†С†Рѕ-СЃРѕРїСЂР°РЅРѕ", PlayId = soslan.Id },
+            new Role { Name = "Р‘Р°С‚СЂР°Р·", GenderRequirement = "male", AgeRange = "20-35", VoiceRequirements = "Р±Р°СЂРёС‚РѕРЅ, СЃС‚СЂР°СЃС‚РЅС‹Р№", PlayId = soslan.Id }
         });
 
-        var cherry = plays.First(p => p.Title == "Вишневый сад");
+        // Р РѕР»Рё РґР»СЏ "РўР°СЂР°РЅРґР¶РµР»РѕР·"
+        var taran = plays.First(p => p.Title.Contains("РўР°СЂР°РЅРґР¶РµР»РѕР·"));
         roles.AddRange(new[]
         {
-            new Role { Name = "Раневская Любовь Андреевна", GenderRequirement = "female", AgeRange = "40-50", VoiceRequirements = "контральто, эмоциональное", PlayId = cherry.Id },
-            new Role { Name = "Лопахин Ермолай Алексеевич", GenderRequirement = "male", AgeRange = "35-45", VoiceRequirements = "баритон, энергичный", PlayId = cherry.Id },
-            new Role { Name = "Трофимов Петр Сергеевич", GenderRequirement = "male", AgeRange = "25-30", VoiceRequirements = "тенор, восторженный", PlayId = cherry.Id },
-            new Role { Name = "Аня", GenderRequirement = "female", AgeRange = "17-20", VoiceRequirements = "сопрано, юное", PlayId = cherry.Id }
+            new Role { Name = "РўР°СЂР°РЅРґР¶РµР»РѕР·", GenderRequirement = "male", AgeRange = "25-45", VoiceRequirements = "РєРѕРјРёС‡РµСЃРєРёР№ С‚РµРЅРѕСЂ", PlayId = taran.Id },
+            new Role { Name = "Р—Р°Р»РёРЅР°", GenderRequirement = "female", AgeRange = "20-25", VoiceRequirements = "СЃРѕРїСЂР°РЅРѕ", PlayId = taran.Id },
+            new Role { Name = "Р”Р·Р°РјР±РѕР»Р°С‚", GenderRequirement = "male", AgeRange = "40-55", VoiceRequirements = "Р±Р°СЃ, РєРѕРјРёС‡РµСЃРєРёР№", PlayId = taran.Id }
         });
 
-        var hamlet = plays.First(p => p.Title == "Гамлет");
+        // Р РѕР»Рё РґР»СЏ "РҐР°Р·Р±Рё"
+        var khazbi = plays.First(p => p.Title.Contains("РҐР°Р·Р±Рё"));
         roles.AddRange(new[]
         {
-            new Role { Name = "Гамлет", GenderRequirement = "male", AgeRange = "30-40", VoiceRequirements = "драматический тенор", PlayId = hamlet.Id },
-            new Role { Name = "Офелия", GenderRequirement = "female", AgeRange = "20-25", VoiceRequirements = "лирическое сопрано", PlayId = hamlet.Id },
-            new Role { Name = "Клавдий", GenderRequirement = "male", AgeRange = "50-60", VoiceRequirements = "бас, зловещий", PlayId = hamlet.Id },
-            new Role { Name = "Гертруда", GenderRequirement = "female", AgeRange = "45-55", VoiceRequirements = "меццо-сопрано", PlayId = hamlet.Id }
+            new Role { Name = "РҐР°Р·Р±Рё", GenderRequirement = "male", AgeRange = "30-40", VoiceRequirements = "РґСЂР°РјР°С‚РёС‡РµСЃРєРёР№ Р±Р°СЂРёС‚РѕРЅ", PlayId = khazbi.Id },
+            new Role { Name = "Р—Р°РјРёСЂР°", GenderRequirement = "female", AgeRange = "20-28", VoiceRequirements = "СЃРѕРїСЂР°РЅРѕ", PlayId = khazbi.Id },
+            new Role { Name = "РЎС‚Р°СЂРµР№С€РёРЅР°", GenderRequirement = "male", AgeRange = "60-75", VoiceRequirements = "Р±Р°СЃ", PlayId = khazbi.Id }
         });
 
         _context.Roles.AddRange(roles);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
+        // ================================================================
+        // 7. РЎРћРўР РЈР”РќРРљР РўР•РђРўР Рђ (Р’РЎР• Р РћР›Р - РћРЎР•РўРРќРЎРљРР• Р¤РђРњРР›РР)
+        // ================================================================
         var employers = new List<Employer>
         {
-            new Employer { Fio = "Иван Петрович Смирнов", Gender = "male", BirthDate = new DateTime(1985, 5, 15),
-                Position = "Ведущий актер", Salary = 85000, Status = "работает", Contacts = "+7 (999) 123-45-67" },
-            new Employer { Fio = "Мария Александровна Волкова", Gender = "female", BirthDate = new DateTime(1990, 3, 22),
-                Position = "Актриса", Salary = 75000, Status = "работает", Contacts = "+7 (999) 234-56-78" },
-            new Employer { Fio = "Алексей Николаевич Морозов", Gender = "male", BirthDate = new DateTime(1988, 11, 8),
-                Position = "Актер", Salary = 70000, Status = "работает", Contacts = "+7 (999) 345-67-89" },
-            new Employer { Fio = "Елена Дмитриевна Козлова", Gender = "female", BirthDate = new DateTime(1995, 7, 30),
-                Position = "Молодая актриса", Salary = 55000, Status = "работает", Contacts = "+7 (999) 456-78-90" },
-            new Employer { Fio = "Сергей Владимирович Новиков", Gender = "male", BirthDate = new DateTime(1982, 1, 12),
-                Position = "Режиссер", Salary = 120000, Status = "работает", Contacts = "+7 (999) 567-89-01" },
-            new Employer { Fio = "Ольга Павловна Соколова", Gender = "female", BirthDate = new DateTime(1987, 9, 5),
-                Position = "Художник по костюмам", Salary = 65000, Status = "работает", Contacts = "+7 (999) 678-90-12" },
-            new Employer { Fio = "Дмитрий Андреевич Лебедев", Gender = "male", BirthDate = new DateTime(1992, 4, 18),
-                Position = "Актер", Salary = 60000, Status = "работает", Contacts = "+7 (999) 789-01-23" },
-            new Employer { Fio = "Тамерлан Асланович Караев", Gender = "male", BirthDate = new DateTime(1989, 8, 25),
-                Position = "Актер (кавказские роли)", Salary = 80000, Status = "работает", Contacts = "+7 (999) 890-12-34" },
-            new Employer { Fio = "Замира Расуловна Гамзатова", Gender = "female", BirthDate = new DateTime(1991, 12, 10),
-                Position = "Актриса (национальные роли)", Salary = 75000, Status = "работает", Contacts = "+7 (999) 901-23-45" }
+            // Р РЈРљРћР’РћР”РЎРўР’Рћ
+            new Employer { Fio = "РўР°Р№РјСѓСЂР°Р· Р“РµРѕСЂРіРёРµРІРёС‡ Р”Р·Р°СЂР°СЃРѕРІ", Gender = "male", BirthDate = new DateTime(1970, 5, 15),
+                Position = "Р”РёСЂРµРєС‚РѕСЂ С‚РµР°С‚СЂР°", Salary = 250000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-01", Email = "director@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "РђР»Р°РЅР° Р СѓСЃР»Р°РЅРѕРІРЅР° Р”РѕРіСѓР·РѕРІР°", Gender = "female", BirthDate = new DateTime(1980, 8, 22),
+                Position = "РҐСѓРґРѕР¶РµСЃС‚РІРµРЅРЅС‹Р№ СЂСѓРєРѕРІРѕРґРёС‚РµР»СЊ", Salary = 200000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-02", Email = "art.director@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "РЎРѕСЃР»Р°РЅ Р‘РѕСЂРёСЃРѕРІРёС‡ РўРµРґРµРµРІ", Gender = "male", BirthDate = new DateTime(1975, 3, 10),
+                Position = "Р“Р»Р°РІРЅС‹Р№ СЂРµР¶РёСЃСЃС‘СЂ", Salary = 180000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-03", Email = "chief.director@irbis-theatre.ru", Password = "password123" },
+
+            // Р Р•Р–РРЎРЎРЃР Р«
+            new Employer { Fio = "Р—Р°СѓСЂР±РµРє РљР°Р·Р±РµРєРѕРІРёС‡ Р”Р·Р°РЅС‚РёРµРІ", Gender = "male", BirthDate = new DateTime(1982, 7, 19),
+                Position = "Р РµР¶РёСЃСЃС‘СЂ-РїРѕСЃС‚Р°РЅРѕРІС‰РёРє", Salary = 150000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-04", Email = "zaur.dzantiev@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "Р¤Р°С‚РёРјР° РњСѓСЂР°С‚РѕРІРЅР° Р”Р·СѓС†РµРІР°", Gender = "female", BirthDate = new DateTime(1988, 11, 2),
+                Position = "Р РµР¶РёСЃСЃС‘СЂ", Salary = 130000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-05", Email = "fatima.dzutseva@irbis-theatre.ru", Password = "password123" },
+
+            // РђРљРўРЃР Р«
+            new Employer { Fio = "РњР°СЂР°С‚ РљР°Р·Р±РµРєРѕРІРёС‡ Р‘РёСЂР°РіРѕРІ", Gender = "male", BirthDate = new DateTime(1985, 3, 12),
+                Position = "Р’РµРґСѓС‰РёР№ Р°СЂС‚РёСЃС‚ РґСЂР°РјС‹", Salary = 95000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-10", Email = "marat.biragov@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "Р¤Р°С‚РёРјР° РўР°Р№РјСѓСЂР°Р·РѕРІРЅР° РҐРµС‚Р°РіСѓСЂРѕРІР°", Gender = "female", BirthDate = new DateTime(1987, 7, 25),
+                Position = "Р’РµРґСѓС‰Р°СЏ Р°СЂС‚РёСЃС‚РєР°", Salary = 95000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-11", Email = "fatima.khetagurova@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "РЎРѕСЃР»Р°РЅ Р­Р»СЊР±СЂСѓСЃРѕРІРёС‡ Р“СѓС†СѓРЅР°РµРІ", Gender = "male", BirthDate = new DateTime(1990, 1, 18),
+                Position = "РђСЂС‚РёСЃС‚ РґСЂР°РјС‹", Salary = 75000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-12", Email = "soslan.gutsunaev@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "Р”РёР°РЅР° РђС…СЃР°СЂР±РµРєРѕРІРЅР° Р”Р·Р°СЂР°С…РѕС…РѕРІР°", Gender = "female", BirthDate = new DateTime(1992, 5, 9),
+                Position = "РђСЂС‚РёСЃС‚РєР°", Salary = 70000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-13", Email = "diana.dzarakhokhova@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "РђС†Р°РјР°Р· Р‘Р°С‚СЂР°Р·РѕРІРёС‡ РўРѕРіРѕРµРІ", Gender = "male", BirthDate = new DateTime(1988, 9, 14),
+                Position = "РђСЂС‚РёСЃС‚", Salary = 72000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-14", Email = "atsamaz.togoev@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "Р—Р°СЂРµРјР° РЎРѕСЃР»Р°РЅРѕРІРЅР° Р”Р¶РёРѕРµРІР°", Gender = "female", BirthDate = new DateTime(1991, 12, 3),
+                Position = "РђСЂС‚РёСЃС‚РєР°", Salary = 70000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-15", Email = "zarema.dzhioeva@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "Р§РµСЂРјРµРЅ Р’СЏС‡РµСЃР»Р°РІРѕРІРёС‡ РљР°СЃР°РµРІ", Gender = "male", BirthDate = new DateTime(1993, 4, 27),
+                Position = "РђСЂС‚РёСЃС‚", Salary = 65000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-16", Email = "chermen.kasaev@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "Р›Р°СѓСЂР° РђР·Р°РјР°С‚РѕРІРЅР° Р‘РµСЃС‚Р°РµРІР°", Gender = "female", BirthDate = new DateTime(1994, 10, 20),
+                Position = "РђСЂС‚РёСЃС‚РєР°", Salary = 65000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-17", Email = "laura.bestaeva@irbis-theatre.ru", Password = "password123" },
+
+            // РљРђРЎРЎРР Р«
+            new Employer { Fio = "РСЂРёРЅР° РљР°Р·Р±РµРєРѕРІРЅР° РњРѕСЂРіРѕРµРІР°", Gender = "female", BirthDate = new DateTime(1985, 6, 15),
+                Position = "РЎС‚Р°СЂС€РёР№ РєР°СЃСЃРёСЂ", Salary = 45000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-20", Email = "irina.morgoeva@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "РђСЃР»Р°РЅ Р“РµРѕСЂРіРёРµРІРёС‡ Р¦Р°СЂРёРєР°РµРІ", Gender = "male", BirthDate = new DateTime(1990, 3, 22),
+                Position = "РљР°СЃСЃРёСЂ", Salary = 35000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-21", Email = "aslan.tsarikhaev@irbis-theatre.ru", Password = "password123" },
+
+            // РњРЈР—Р«РљРђРќРўР«
+            new Employer { Fio = "РђР»Р°РЅ Р§РµСЂРјРµРЅРѕРІРёС‡ РҐР°Р±Р°Р»РѕРІ", Gender = "male", BirthDate = new DateTime(1980, 11, 8),
+                Position = "РљРѕРјРїРѕР·РёС‚РѕСЂ", Salary = 100000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-30", Email = "alan.khabalov@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "Р—Р°СѓСЂР±РµРє РўР°РјРµСЂР»Р°РЅРѕРІРёС‡ РљСѓР»СѓРјР±РµРіРѕРІ", Gender = "male", BirthDate = new DateTime(1983, 5, 12),
+                Position = "РњСѓР·С‹РєР°РЅС‚ (С„РѕСЂС‚РµРїРёР°РЅРѕ)", Salary = 55000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-31", Email = "zaur.kulumbegov@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "РњР°РґРёРЅР° РњР°СЂР°С‚РѕРІРЅР° Р“Р°Р·РґР°РЅРѕРІР°", Gender = "female", BirthDate = new DateTime(1987, 9, 25),
+                Position = "РњСѓР·С‹РєР°РЅС‚ (СЃРєСЂРёРїРєР°)", Salary = 55000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-32", Email = "madina.gazdanova@irbis-theatre.ru", Password = "password123" },
+
+            // РҐРЈР”РћР–РќРРљР Р РџРћРЎРўРђРќРћР’РћР§РќРђРЇ Р§РђРЎРўР¬
+            new Employer { Fio = "Р’Р°РґРёРј Р­Р»СЊР±СЂСѓСЃРѕРІРёС‡ Р”Р·Р°РіРѕРµРІ", Gender = "male", BirthDate = new DateTime(1982, 4, 17),
+                Position = "РҐСѓРґРѕР¶РЅРёРє-РїРѕСЃС‚Р°РЅРѕРІС‰РёРє", Salary = 80000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-40", Email = "vadim.dzagoev@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "РњР°РґРёРЅР° Р СѓСЃР»Р°РЅРѕРІРЅР° РљР°СЂРіРёРЅРѕРІР°", Gender = "female", BirthDate = new DateTime(1986, 7, 8),
+                Position = "РҐСѓРґРѕР¶РЅРёРє РїРѕ РєРѕСЃС‚СЋРјР°Рј", Salary = 65000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-41", Email = "madina.karginova@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "Р СѓСЃР»Р°РЅ РђС…СЃР°СЂР±РµРєРѕРІРёС‡ РҐР°РґРёРєРѕРІ", Gender = "male", BirthDate = new DateTime(1985, 12, 20),
+                Position = "РҐСѓРґРѕР¶РЅРёРє РїРѕ СЃРІРµС‚Сѓ", Salary = 70000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-42", Email = "ruslan.khadikov@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "Р“РµРѕСЂРіРёР№ РўР°Р№РјСѓСЂР°Р·РѕРІРёС‡ Р”Р·Р°РјРїРѕРІ", Gender = "male", BirthDate = new DateTime(1988, 2, 14),
+                Position = "Р—РІСѓРєРѕСЂРµР¶РёСЃСЃС‘СЂ", Salary = 68000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-43", Email = "georgy.dzampov@irbis-theatre.ru", Password = "password123" },
+
+            // РўР•РҐРќРР§Р•РЎРљРР™ РџР•Р РЎРћРќРђР›
+            new Employer { Fio = "РђРЅР·РѕСЂ Р‘РѕСЂРёСЃРѕРІРёС‡ РҐСѓРіР°РµРІ", Gender = "male", BirthDate = new DateTime(1978, 6, 10),
+                Position = "Р—Р°РІРµРґСѓСЋС‰РёР№ РјРѕРЅС‚РёСЂРѕРІРѕС‡РЅРѕР№ С‡Р°СЃС‚СЊСЋ", Salary = 60000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-50", Email = "anzor.khugaev@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "Р СѓСЃР»Р°РЅ РљР°Р·Р±РµРєРѕРІРёС‡ Р‘СѓСЂРЅР°С†РµРІ", Gender = "male", BirthDate = new DateTime(1985, 9, 18),
+                Position = "РњРѕРЅС‚РёСЂРѕРІС‰РёРє СЃС†РµРЅС‹", Salary = 45000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-51", Email = "ruslan.burnatsev@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "РўР°Р№РјСѓСЂР°Р· Р¤РµР»РёРєСЃРѕРІРёС‡ РЎР°Р±Р°РЅРѕРІ", Gender = "male", BirthDate = new DateTime(1987, 11, 22),
+                Position = "РћСЃРІРµС‚РёС‚РµР»СЊ", Salary = 42000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-52", Email = "taimuraz.sabanov@irbis-theatre.ru", Password = "password123" },
+
+            // РђР”РњРРќРРЎРўР РђРўРР’РќРћ-РҐРћР—РЇР™РЎРўР’Р•РќРќР«Р™ РћРўР”Р•Р›
+            new Employer { Fio = "Р¤Р°С‚РёРјР° Р“РµРѕСЂРіРёРµРІРЅР° Р”РµРјСѓСЂРѕРІР°", Gender = "female", BirthDate = new DateTime(1975, 3, 25),
+                Position = "РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ", Salary = 55000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-60", Email = "fatima.demurova@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "РЎРІРµС‚Р»Р°РЅР° Р§РµСЂРјРµРЅРѕРІРЅР° Р¦РѕРїР°РµРІР°", Gender = "female", BirthDate = new DateTime(1980, 10, 5),
+                Position = "РњРµРЅРµРґР¶РµСЂ РїРѕ СЂР°Р±РѕС‚Рµ СЃ РїРѕСЃРµС‚РёС‚РµР»СЏРјРё", Salary = 48000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-61", Email = "svetlana.tsopaeva@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "Р—Р°СѓСЂ РСЂР±РµРєРѕРІРёС‡ РҐР°РјРёС†Р°РµРІ", Gender = "male", BirthDate = new DateTime(1982, 7, 14),
+                Position = "Р“Р°СЂРґРµСЂРѕР±С‰РёРє", Salary = 25000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-70", Email = "zaur.khamitsaev@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "РњР°РґРёРЅР° Р СѓСЃР»Р°РЅРѕРІРЅР° Р‘РµРєРѕРµРІР°", Gender = "female", BirthDate = new DateTime(1990, 4, 9),
+                Position = "Р‘РёР»РµС‚С‘СЂ", Salary = 22000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-71", Email = "madina.bekoeva@irbis-theatre.ru", Password = "password123" },
+
+            // РЈР‘РћР Р©РРљР Р РћР‘РЎР›РЈР–РР’РђР®Р©РР™ РџР•Р РЎРћРќРђР›
+            new Employer { Fio = "Р—Р°Р»РёРЅР° РљР°Р·Р±РµРєРѕРІРЅР° РўРµС…РѕРІР°", Gender = "female", BirthDate = new DateTime(1975, 12, 1),
+                Position = "РЈР±РѕСЂС‰РёС†Р° (Р‘РѕР»СЊС€РѕР№ Р·Р°Р»)", Salary = 20000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-80", Email = "zalina.tekhova@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "РўР°С‚СЊСЏРЅР° Р“РµРѕСЂРіРёРµРІРЅР° РљР°С‡РјР°Р·РѕРІР°", Gender = "female", BirthDate = new DateTime(1978, 6, 20),
+                Position = "РЈР±РѕСЂС‰РёС†Р° (РњР°Р»С‹Р№ Р·Р°Р»)", Salary = 20000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-81", Email = "tatiana.kachmazova@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "Р›СЋРґРјРёР»Р° РђС…СЃР°СЂР±РµРєРѕРІРЅР° Р”СЂСЏРµРІР°", Gender = "female", BirthDate = new DateTime(1980, 3, 18),
+                Position = "РЈР±РѕСЂС‰РёС†Р° (РљР°РјРµСЂРЅС‹Р№ Р·Р°Р»)", Salary = 20000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-82", Email = "lyudmila.dryaeva@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "РўР°РјРµСЂР»Р°РЅ РСЂР±РµРєРѕРІРёС‡ РўРјРµРЅРѕРІ", Gender = "male", BirthDate = new DateTime(1982, 8, 25),
+                Position = "Р”РІРѕСЂРЅРёРє", Salary = 20000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-83", Email = "tamerlan.tmenov@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "РђСЃР»Р°РЅР±РµРє РЎРѕСЃР»Р°РЅРѕРІРёС‡ РђР»Р±РµРіРѕРІ", Gender = "male", BirthDate = new DateTime(1985, 11, 30),
+                Position = "Р Р°Р·РЅРѕСЂР°Р±РѕС‡РёР№", Salary = 22000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-84", Email = "aslanbek.albegov@irbis-theatre.ru", Password = "password123" },
+
+            // РњРђР РљР•РўРРќР“ Р PR
+            new Employer { Fio = "РСЂРёРЅР° РЎРѕСЃР»Р°РЅРѕРІРЅР° РљР°Р±СѓР»РѕРІР°", Gender = "female", BirthDate = new DateTime(1986, 9, 28),
+                Position = "PR-РјРµРЅРµРґР¶РµСЂ", Salary = 60000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-90", Email = "irina.kabulova@irbis-theatre.ru", Password = "password123" },
+
+            new Employer { Fio = "РђСЃР»Р°РЅР±РµРє РљР°СѓСЂР±РµРєРѕРІРёС‡ Р•РґР·Р°РµРІ", Gender = "male", BirthDate = new DateTime(1988, 2, 11),
+                Position = "SMM-РјРµРЅРµРґР¶РµСЂ", Salary = 50000, Status = "СЂР°Р±РѕС‚Р°РµС‚",
+                Contacts = "+7 (999) 100-00-91", Email = "aslanbek.edzaev@irbis-theatre.ru", Password = "password123" }
         };
         _context.Employers.AddRange(employers);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
+        // ================================================================
+        // 8. РџРћРЎРўРђРќРћР’РћР§РќРђРЇ Р“Р РЈРџРџРђ (СЃРІСЏР·СЊ СЃРѕС‚СЂСѓРґРЅРёРєРѕРІ СЃРѕ СЃРїРµРєС‚Р°РєР»СЏРјРё)
+        // ================================================================
         var productionTeams = new List<ProductionTeam>();
 
-        var allRoles = _context.Roles.ToList();
-        var allEmployers = _context.Employers.ToList();
+        // РџРѕР»СѓС‡Р°РµРј РІСЃРµС… СЃРѕС‚СЂСѓРґРЅРёРєРѕРІ РїРѕ СЂРѕР»СЏРј
+        var allEmployers = await _context.Employers.ToListAsync();
+        var allRoles = await _context.Roles.ToListAsync();
 
-        foreach (var role in allRoles.Take(10)) 
+        var directors = allEmployers.Where(e => e.Position.Contains("Р РµР¶РёСЃСЃС‘СЂ") || e.Position.Contains("СЂРµР¶РёСЃСЃС‘СЂ")).ToList();
+        var composers = allEmployers.Where(e => e.Position.Contains("РљРѕРјРїРѕР·РёС‚РѕСЂ") || e.Position.Contains("РєРѕРјРїРѕР·РёС‚РѕСЂ")).ToList();
+        var artists = allEmployers.Where(e => e.Position.Contains("РђСЂС‚РёСЃС‚") || e.Position.Contains("Р°СЂС‚РёСЃС‚") || e.Position.Contains("РђРєС‚РµСЂ") || e.Position.Contains("Р°РєС‚РµСЂ")).ToList();
+        var designers = allEmployers.Where(e => e.Position.Contains("РҐСѓРґРѕР¶РЅРёРє")).ToList();
+        var soundEngineers = allEmployers.Where(e => e.Position.Contains("Р—РІСѓРєРѕСЂРµР¶РёСЃСЃС‘СЂ")).ToList();
+
+        foreach (var play in plays)
         {
-            var randomActor = allEmployers.Where(e =>
-                (role.GenderRequirement == "any" ||
-                 (role.GenderRequirement == "male" && e.Gender == "male") ||
-                 (role.GenderRequirement == "female" && e.Gender == "female"))).FirstOrDefault();
+            var rolesForPlay = allRoles.Where(r => r.PlayId == play.Id).ToList();
 
-            if (randomActor != null)
-            {
-                productionTeams.Add(new ProductionTeam
-                {
-                    EmployerId = randomActor.Id,
-                    RoleId = role.Id,
-                    ParticipationType = "актёр",
-                    ProductionPosition = role.Name
-                });
-            }
-        }
-
-        var directors = allEmployers.Where(e => e.Position == "Режиссер").ToList();
-        var somePlays = _context.Plays.Take(4).ToList();
-        var someRoles = _context.Roles.Where(r => r.Name.Contains("Гамлет") || r.Name.Contains("Раневская")).ToList();
-
-        foreach (var role in someRoles)
-        {
+            // РќР°Р·РЅР°С‡Р°РµРј СЂРµР¶РёСЃСЃС‘СЂР°
             if (directors.Any())
             {
                 productionTeams.Add(new ProductionTeam
                 {
                     EmployerId = directors.First().Id,
-                    RoleId = role.Id,
-                    ParticipationType = "режиссёр-постановщик",
-                    ProductionPosition = $"Режиссура спектакля {role.Play?.Title ?? "текущего спектакля"}"
+                    RoleId = rolesForPlay.FirstOrDefault()?.Id ?? 1,
+                    ParticipationType = "СЂРµР¶РёСЃСЃС‘СЂ-РїРѕСЃС‚Р°РЅРѕРІС‰РёРє",
+                    ProductionPosition = $"Р РµР¶РёСЃСЃСѓСЂР° СЃРїРµРєС‚Р°РєР»СЏ {play.Title}"
+                });
+            }
+
+            // РќР°Р·РЅР°С‡Р°РµРј РєРѕРјРїРѕР·РёС‚РѕСЂР°
+            if (composers.Any())
+            {
+                productionTeams.Add(new ProductionTeam
+                {
+                    EmployerId = composers.First().Id,
+                    RoleId = rolesForPlay.FirstOrDefault()?.Id ?? 1,
+                    ParticipationType = "РєРѕРјРїРѕР·РёС‚РѕСЂ",
+                    ProductionPosition = $"РњСѓР·С‹РєР°Р»СЊРЅРѕРµ РѕС„РѕСЂРјР»РµРЅРёРµ {play.Title}"
+                });
+            }
+
+            // РќР°Р·РЅР°С‡Р°РµРј С…СѓРґРѕР¶РЅРёРєР°-РїРѕСЃС‚Р°РЅРѕРІС‰РёРєР°
+            if (designers.Any())
+            {
+                productionTeams.Add(new ProductionTeam
+                {
+                    EmployerId = designers.First().Id,
+                    RoleId = rolesForPlay.FirstOrDefault()?.Id ?? 1,
+                    ParticipationType = "С…СѓРґРѕР¶РЅРёРє-РїРѕСЃС‚Р°РЅРѕРІС‰РёРє",
+                    ProductionPosition = $"РЎС†РµРЅРѕРіСЂР°С„РёСЏ {play.Title}"
+                });
+            }
+
+            // РќР°Р·РЅР°С‡Р°РµРј Р°СЂС‚РёСЃС‚РѕРІ РЅР° СЂРѕР»Рё
+            for (int i = 0; i < rolesForPlay.Count && i < artists.Count; i++)
+            {
+                productionTeams.Add(new ProductionTeam
+                {
+                    EmployerId = artists[i % artists.Count].Id,
+                    RoleId = rolesForPlay[i].Id,
+                    ParticipationType = "Р°РєС‚С‘СЂ",
+                    ProductionPosition = rolesForPlay[i].Name
                 });
             }
         }
 
         _context.ProductionTeams.AddRange(productionTeams);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
+        // ================================================================
+        // 9. РџРћРљРђР—Р« РЎРџР•РљРўРђРљР›Р•Р™
+        // ================================================================
         var performances = new List<Performance>();
+        var random = new Random();
+        var startDate = DateTime.Now.Date.AddDays(7);
 
         foreach (var play in plays)
         {
-            var dates = new[]
+            for (int i = 0; i < 4; i++) // 4 РїРѕРєР°Р·Р° РЅР° СЃРїРµРєС‚Р°РєР»СЊ
             {
-                DateTime.Now.AddDays(Random.Shared.Next(1, 30)),
-                DateTime.Now.AddDays(Random.Shared.Next(31, 60)),
-                DateTime.Now.AddDays(Random.Shared.Next(61, 90))
-            };
-
-            foreach (var date in dates.Take(play.Title == "Мцыри" || play.Title == "Гамлет" ? 3 : 2))
-            {
+                var performanceDate = startDate.AddDays(random.Next(1, 60));
                 performances.Add(new Performance
                 {
-                    Datetime = date.Date.AddHours(19), 
-                    BasePrice = 800 + Random.Shared.Next(0, 500),
-                    IsPremiere = play.PremiereDate?.Date == date.Date,
-                    Status = "запланирован",
+                    Datetime = performanceDate.Date.AddHours(19),
+                    BasePrice = random.Next(500, 2000),
+                    IsPremiere = i == 0 && play.PremiereDate.HasValue && play.PremiereDate.Value.Year == DateTime.Now.Year,
+                    Status = "Р·Р°РїР»Р°РЅРёСЂРѕРІР°РЅ",
                     PlayId = play.Id
                 });
             }
         }
 
         _context.Performances.AddRange(performances);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
+        // ================================================================
+        // 10. Р‘РР›Р•РўР«
+        // ================================================================
         var tickets = new List<Ticket>();
         int ticketCounter = 1;
+        var allSeats = await _context.Seats.Take(100).ToListAsync();
 
         foreach (var performance in performances)
         {
-            var seatsForPerformance = _context.Seats.Take(30).ToList(); 
-
-            foreach (var seat in seatsForPerformance)
+            foreach (var seat in allSeats)
             {
                 string status;
-                int priceMultiplier = seat.Category == "Партер" ? 2 : seat.Category == "Бельэтаж" ? 1 : 1;
+                int priceMultiplier = seat.Category == "РџР°СЂС‚РµСЂ-Р»СЋРєСЃ" ? 3 : seat.Category == "РџР°СЂС‚РµСЂ" ? 2 : 1;
 
-                if (ticketCounter % 3 == 0)
+                if (ticketCounter % 4 == 0)
                     status = "sold";
-                else if (ticketCounter % 5 == 0)
+                else if (ticketCounter % 7 == 0)
                     status = "reserved";
                 else
                     status = "free";
@@ -378,14 +534,17 @@ public class TestDataSeeder
         }
 
         _context.Tickets.AddRange(tickets);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
+        // ================================================================
+        // 11. РЎР’РЇР—Р¬ РџРћРљРђР—РћР’ Р РџРћРЎРўРђРќРћР’РћР§РќРћР™ Р“Р РЈРџРџР«
+        // ================================================================
         var performanceGroups = new List<PerformanceGroup>();
-        var allProductionTeams = _context.ProductionTeams.ToList();
+        var allProductionTeams = await _context.ProductionTeams.ToListAsync();
 
-        foreach (var performance in performances.Take(5)) 
+        foreach (var performance in performances.Take(20))
         {
-            var teamForPerformance = allProductionTeams.Take(3); 
+            var teamForPerformance = allProductionTeams.Take(5);
             foreach (var team in teamForPerformance)
             {
                 performanceGroups.Add(new PerformanceGroup
@@ -397,11 +556,15 @@ public class TestDataSeeder
         }
 
         _context.PerformanceGroups.AddRange(performanceGroups);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
-        Console.WriteLine($"Тестовые данные успешно добавлены!");
-        Console.WriteLine($"Добавлено: {authors.Count} авторов, {genres.Count} жанров, {plays.Count} пьес");
-        Console.WriteLine($"Добавлено: {roles.Count} ролей, {employers.Count} сотрудников");
-        Console.WriteLine($"Добавлено: {performances.Count} показов, {tickets.Count} билетов");
+        Console.WriteLine($"вњ… РўРµСЃС‚РѕРІС‹Рµ РґР°РЅРЅС‹Рµ СѓСЃРїРµС€РЅРѕ РґРѕР±Р°РІР»РµРЅС‹!");
+        Console.WriteLine($"рџ“љ РђРІС‚РѕСЂРѕРІ: {authors.Count}");
+        Console.WriteLine($"рџЋ­ Р–Р°РЅСЂРѕРІ: {genres.Count}");
+        Console.WriteLine($"рџЋЄ РЎРїРµРєС‚Р°РєР»РµР№: {plays.Count}");
+        Console.WriteLine($"рџ‘Ґ РЎРѕС‚СЂСѓРґРЅРёРєРѕРІ: {employers.Count}");
+        Console.WriteLine($"рџЋЇ Р РѕР»РµР№: {roles.Count}");
+        Console.WriteLine($"рџ“… РџРѕРєР°Р·РѕРІ: {performances.Count}");
+        Console.WriteLine($"рџЋ« Р‘РёР»РµС‚РѕРІ: {tickets.Count}");
     }
 }

@@ -1,0 +1,42 @@
+﻿@{
+    ViewData["Title"] = "Удалить сотрудника";
+    Layout = "_DashboardLayout";
+    var emp = ViewBag.Employee as IrbisTheatre.Models.Employer;
+}
+
+<div class="content-section active" id="dashboard-section">
+    <div class="card" style="max-width: 500px; margin: 0 auto; text-align: center;">
+        <div style="font-size: 64px; margin-bottom: 20px;">⚠️</div>
+        <h2 style="margin-bottom: 15px;">Удаление сотрудника</h2>
+        <p>Вы уверены, что хотите удалить сотрудника <strong>@emp?.Fio</strong>?</p>
+        <p style="color: #ff4757; font-size: 14px;">Это действие необратимо!</p>
+
+        <form method="post" action="/Dashboard/DeleteEmployee" style="margin-top: 25px;">
+            <input type="hidden" name="id" value="@emp?.Id">
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <button type="submit" class="btn-danger">🗑️ Удалить</button>
+                <a href="/Dashboard/Employees" class="btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .btn-danger {
+        padding: 10px 24px;
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+    }
+
+    .btn-secondary {
+        padding: 10px 24px;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(123,104,238,0.5);
+        border-radius: 8px;
+        color: white;
+        text-decoration: none;
+    }
+</style>

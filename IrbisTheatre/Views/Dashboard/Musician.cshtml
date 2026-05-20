@@ -1,0 +1,91 @@
+﻿@{
+    ViewData["Title"] = "Панель музыканта";
+    Layout = "_DashboardLayout";
+}
+
+<div class="dashboard-header">
+    <h2>Панель музыканта</h2>
+    <p>Ваше расписание и репертуар</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">🎵</div>
+        <h3>Спектаклей с участием</h3>
+        <p class="stat-value">@(ViewBag.MySchedule?.Count ?? 0)</p>
+    </div>
+</div>
+
+@if (ViewBag.MySchedule != null && ((System.Collections.IEnumerable)ViewBag.MySchedule).Cast<object>().Any())
+{
+    <div class="schedule-section">
+        <h3>Моё расписание</h3>
+        <div class="schedule-list">
+            @foreach (var perf in ViewBag.MySchedule)
+            {
+                <div class="schedule-item">
+                    <span class="date">@perf.Datetime.ToString("dd.MM.yyyy")</span>
+                    <span class="time">@perf.Datetime.ToString("HH:mm")</span>
+                    <span class="play">@perf.Play?.Title</span>
+                    <span class="status">@perf.Status</span>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<div class="quick-actions">
+    <h3>Быстрые действия</h3>
+    <div class="actions-grid">
+        <button class="action-btn" onclick="alert('Музыкальный репертуар')">
+            <span>🎵</span> Репертуар
+        </button>
+        <button class="action-btn" onclick="alert('Расписание репетиций')">
+            <span>📅</span> Репетиции
+        </button>
+        <button class="action-btn" onclick="alert('Ноты')">
+            <span>🎶</span> Ноты
+        </button>
+    </div>
+</div>
+
+<style>
+    .schedule-section {
+        margin: 30px 0;
+    }
+
+        .schedule-section h3 {
+            margin-bottom: 20px;
+            color: #7b68ee;
+        }
+
+    .schedule-list {
+        background: rgba(255,255,255,0.05);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .schedule-item {
+        display: flex;
+        gap: 20px;
+        padding: 12px 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .date {
+        min-width: 100px;
+        font-weight: bold;
+    }
+
+    .time {
+        min-width: 60px;
+    }
+
+    .play {
+        flex: 1;
+    }
+
+    .status {
+        color: #2ecc71;
+    }
+</style>

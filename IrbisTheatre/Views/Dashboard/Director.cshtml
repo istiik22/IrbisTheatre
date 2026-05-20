@@ -1,0 +1,84 @@
+﻿@{
+    ViewData["Title"] = "Панель директора";
+    Layout = "_DashboardLayout";
+    var plays = ViewBag.Plays as List<IrbisTheatre.Models.Play>;
+    var upcoming = ViewBag.UpcomingPerformances as List<IrbisTheatre.Models.Performance>;
+}
+
+<div class="dashboard-header">
+    <h2>Панель директора</h2>
+    <p>Управление репертуаром и планирование</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">🎭</div>
+        <h3>Спектаклей в репертуаре</h3>
+        <p class="stat-value">@(plays?.Count ?? 0)</p>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">📅</div>
+        <h3>Ближайших показов</h3>
+        <p class="stat-value">@(upcoming?.Count ?? 0)</p>
+    </div>
+</div>
+
+<div class="repertoire-section">
+    <h3>Актуальный репертуар</h3>
+    <div class="plays-list">
+        @if (plays != null && plays.Any())
+        {
+            foreach (var play in plays.Take(5))
+            {
+                <div class="play-item">
+                    <strong>@play.Title</strong>
+                    <span>@play.Author?.Fio</span>
+                    <span>@play.Genre?.Name</span>
+                </div>
+            }
+        }
+        else
+        {
+            <p>Нет данных</p>
+        }
+    </div>
+</div>
+
+<div class="quick-actions">
+    <h3>Быстрые действия</h3>
+    <div class="actions-grid">
+        <button class="action-btn" onclick="alert('Распределение ролей')">
+            <span>🎭</span> Распределение ролей
+        </button>
+        <button class="action-btn" onclick="alert('Планирование сезона')">
+            <span>📅</span> Планирование сезона
+        </button>
+        <button class="action-btn" onclick="alert('Отчёт по спектаклям')">
+            <span>📊</span> Отчёт по спектаклям
+        </button>
+    </div>
+</div>
+
+<style>
+    .plays-list {
+        background: rgba(255,255,255,0.05);
+        border-radius: 10px;
+        padding: 15px;
+    }
+
+    .play-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .repertoire-section {
+        margin: 30px 0;
+    }
+
+        .repertoire-section h3 {
+            margin-bottom: 15px;
+            color: #7b68ee;
+        }
+</style>

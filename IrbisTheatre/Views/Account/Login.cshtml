@@ -1,0 +1,215 @@
+﻿@model LoginViewModel
+@{
+    ViewData["Title"] = "Вход в систему";
+    var errorMessage = TempData["LoginError"] as string;
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - Театр "Irbis"</title>
+    <link rel="stylesheet" href="~/css/stars.css">
+    <link rel="stylesheet" href="~/css/main.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 20px;
+        }
+
+        .auth-card {
+            background: rgba(26, 26, 74, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(123, 104, 238, 0.5);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .auth-title {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #4a90e2, #7b68ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 8px;
+                color: #ccc;
+                font-weight: 500;
+            }
+
+            .form-group input {
+                width: 100%;
+                padding: 12px 15px;
+                border-radius: 10px;
+                border: 1px solid rgba(123, 104, 238, 0.3);
+                background: rgba(255, 255, 255, 0.1);
+                color: white;
+                font-size: 16px;
+            }
+
+                .form-group input:focus {
+                    outline: none;
+                    border-color: #7b68ee;
+                    box-shadow: 0 0 10px rgba(123, 104, 238, 0.5);
+                }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .checkbox-group input {
+                width: auto;
+            }
+
+        .btn-auth {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #4a90e2, #7b68ee);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .btn-auth:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 20px rgba(123, 104, 238, 0.5);
+            }
+
+        .auth-links {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+            .auth-links a {
+                color: #7b68ee;
+                text-decoration: none;
+            }
+
+        .alert-error {
+            background: rgba(255, 71, 87, 0.2);
+            border: 1px solid #ff4757;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 20px;
+            color: #ff6b7c;
+            text-align: center;
+        }
+
+        .alert-success {
+            background: rgba(46, 204, 113, 0.2);
+            border: 1px solid #2ecc71;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 20px;
+            color: #6fdf9b;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <h1 class="auth-title">Вход для сотрудников</h1>
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert-error">@errorMessage</div>
+            }
+
+            @* @if (TempData["Success"] != null)
+            {
+                <div class="alert-success">@TempData["Success"]</div>
+            } *@
+
+            <form asp-action="Login" asp-controller="Account" method="post" id="loginForm">
+                <div class="form-group">
+                    <label asp-for="Email">Email</label>
+                    <input asp-for="Email" type="email" class="form-control" required placeholder="example@irbis-theatre.ru" id="Email">
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Password">Пароль</label>
+                    <input asp-for="Password" type="password" class="form-control" required placeholder="Введите пароль" id="Password">
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-group">
+                        <input asp-for="RememberMe" type="checkbox">
+                        <span>Запомнить меня</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-auth">Войти</button>
+            </form>
+
+            <div class="auth-links">
+                <a href="@Url.Action("Register", "Account")">Нет аккаунта? Зарегистрироваться</a>
+                <br>
+                <small style="color: #666;">Демо-пароль: password123</small>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/js/main.js"></script>
+    <script>
+        document.getElementById('loginForm')?.addEventListener('submit', function(e) {
+            const email = document.getElementById('Email').value;
+            const password = document.getElementById('Password').value;
+
+            if (!email) {
+                e.preventDefault();
+                showNotification('Введите email', 'error');
+                return false;
+            }
+
+            if (!password) {
+                e.preventDefault();
+                showNotification('Введите пароль', 'error');
+                return false;
+            }
+        });
+
+        function showNotification(message, type) {
+            const container = document.querySelector('.auth-card');
+            const existingAlert = container.querySelector('.alert-error, .alert-success');
+            if (existingAlert) existingAlert.remove();
+
+            const alert = document.createElement('div');
+            alert.className = type === 'error' ? 'alert-error' : 'alert-success';
+            alert.textContent = message;
+            container.insertBefore(alert, container.firstChild);
+
+            setTimeout(() => {
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

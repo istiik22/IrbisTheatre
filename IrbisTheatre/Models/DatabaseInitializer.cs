@@ -147,6 +147,8 @@ public class DatabaseInitializer
                 ""Gender"" VARCHAR(10) NULL,
                 ""BirthDate"" DATE NULL,
                 ""Contacts"" TEXT NULL,
+                ""Email"" VARCHAR(255) NULL,      -- 👈 ДОБАВИТЬ
+                ""Password"" VARCHAR(255) NULL,   -- 👈 ДОБАВИТЬ
                 ""Position"" VARCHAR(100) NULL,
                 ""Salary"" DECIMAL(10,2) NULL,
                 ""Status"" VARCHAR(50) DEFAULT 'работает'
@@ -846,6 +848,91 @@ public class DatabaseInitializer
             DROP TRIGGER IF EXISTS trigger_EmployerProperties_delete ON ""EmployerProperties"";
             CREATE TRIGGER trigger_EmployerProperties_delete BEFORE DELETE ON ""EmployerProperties"" FOR EACH ROW EXECUTE FUNCTION tr_EmployerProperties_delete();
 
+
+            -- Архивная таблица
+            CREATE TABLE IF NOT EXISTS ""Employers_Arch"" (LIKE ""Employers"" INCLUDING ALL);
+            ALTER TABLE ""Employers_Arch"" ADD COLUMN ""JournalId"" INT;
+            ALTER TABLE ""Employers_Arch"" ADD COLUMN ""OperationType"" VARCHAR(10);
+            ALTER TABLE ""Employers_Arch"" ADD COLUMN ""OperationTime"" TIMESTAMP DEFAULT NOW();
+
+            -- Функция для INSERT
+            CREATE OR REPLACE FUNCTION tr_Employers_insert()
+            RETURNS TRIGGER AS $$
+            DECLARE j_id INT;
+            BEGIN
+                INSERT INTO ""Journal"" (""TableName"", ""Operation"", ""OperationTime"", ""UserName"")
+                VALUES ('Employers', 'INSERT', NOW(), CURRENT_USER) RETURNING ""Id"" INTO j_id;
+    
+                INSERT INTO ""Employers_Arch"" (
+                    ""Id"", ""Fio"", ""Gender"", ""BirthDate"", ""Contacts"", 
+                    ""Email"", ""Password"", ""Position"", ""Salary"", ""Status"", 
+                    ""JournalId"", ""OperationType""
+                ) VALUES (
+                    NEW.""Id"", NEW.""Fio"", NEW.""Gender"", NEW.""BirthDate"", NEW.""Contacts"", 
+                    NEW.""Email"", NEW.""Password"", NEW.""Position"", NEW.""Salary"", NEW.""Status"", 
+                    j_id, 'INSERT'
+                );
+                RETURN NEW;
+            END; $$ LANGUAGE plpgsql;
+
+            -- Функция для UPDATE
+            CREATE OR REPLACE FUNCTION tr_Employers_update()
+            RETURNS TRIGGER AS $$
+            DECLARE j_id INT;
+            BEGIN
+                INSERT INTO ""Journal"" (""TableName"", ""Operation"", ""OperationTime"", ""UserName"")
+                VALUES ('Employers', 'UPDATE', NOW(), CURRENT_USER) RETURNING ""Id"" INTO j_id;
+    
+                INSERT INTO ""Employers_Arch"" (
+                    ""Id"", ""Fio"", ""Gender"", ""BirthDate"", ""Contacts"", 
+                    ""Email"", ""Password"", ""Position"", ""Salary"", ""Status"", 
+                    ""JournalId"", ""OperationType""
+                ) VALUES (
+                    NEW.""Id"", NEW.""Fio"", NEW.""Gender"", NEW.""BirthDate"", NEW.""Contacts"", 
+                    NEW.""Email"", NEW.""Password"", NEW.""Position"", NEW.""Salary"", NEW.""Status"", 
+                    j_id, 'UPDATE'
+                );
+                RETURN NEW;
+            END; $$ LANGUAGE plpgsql;
+
+            -- Функция для DELETE
+            CREATE OR REPLACE FUNCTION tr_Employers_delete()
+            RETURNS TRIGGER AS $$
+            DECLARE j_id INT;
+            BEGIN
+                INSERT INTO ""Journal"" (""TableName"", ""Operation"", ""OperationTime"", ""UserName"")
+                VALUES ('Employers', 'DELETE', NOW(), CURRENT_USER) RETURNING ""Id"" INTO j_id;
+    
+                INSERT INTO ""Employers_Arch"" (
+                    ""Id"", ""Fio"", ""Gender"", ""BirthDate"", ""Contacts"", 
+                    ""Email"", ""Password"", ""Position"", ""Salary"", ""Status"", 
+                    ""JournalId"", ""OperationType""
+                ) VALUES (
+                    OLD.""Id"", OLD.""Fio"", OLD.""Gender"", OLD.""BirthDate"", OLD.""Contacts"", 
+                    OLD.""Email"", OLD.""Password"", OLD.""Position"", OLD.""Salary"", OLD.""Status"", 
+                    j_id, 'DELETE'
+                );
+                RETURN OLD;
+            END; $$ LANGUAGE plpgsql;
+
+            -- Создание триггеров
+            DROP TRIGGER IF EXISTS trigger_Employers_insert ON ""Employers"";
+            CREATE TRIGGER trigger_Employers_insert 
+                AFTER INSERT ON ""Employers"" 
+                FOR EACH ROW 
+                EXECUTE FUNCTION tr_Employers_insert();
+
+            DROP TRIGGER IF EXISTS trigger_Employers_update ON ""Employers"";
+            CREATE TRIGGER trigger_Employers_update 
+                AFTER UPDATE ON ""Employers"" 
+                FOR EACH ROW 
+                EXECUTE FUNCTION tr_Employers_update();
+
+            DROP TRIGGER IF EXISTS trigger_Employers_delete ON ""Employers"";
+            CREATE TRIGGER trigger_Employers_delete 
+                BEFORE DELETE ON ""Employers"" 
+                FOR EACH ROW 
+                EXECUTE FUNCTION tr_Employers_delete();
 
         ";
 

@@ -1,0 +1,27 @@
+﻿@{
+    Layout = null;
+    var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "Staff";
+
+    // Редирект на нужную вьюху в зависимости от роли
+    switch (role)
+    {
+        case "Admin":
+            Context.Response.Redirect("/Dashboard/Admin");
+            break;
+        case "Director":
+            Context.Response.Redirect("/Dashboard/Director");
+            break;
+        case "Cashier":
+            Context.Response.Redirect("/Dashboard/Cashier");
+            break;
+        case "Actor":
+            Context.Response.Redirect("/Dashboard/Actor");
+            break;
+        case "Musician":
+            Context.Response.Redirect("/Dashboard/Musician");
+            break;
+        default:
+            Context.Response.Redirect("/Dashboard/Staff");
+            break;
+    }
+}

@@ -1,0 +1,185 @@
+﻿@model IrbisTheatre.Models.Play
+@{
+    ViewData["Title"] = Model.Title;
+    var performances = ViewBag.UpcomingPerformances as List<IrbisTheatre.Models.Performance>;
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - Театр "Irbis"</title>
+    <link rel="stylesheet" href="~/css/stars.css">
+    <link rel="stylesheet" href="~/css/main.css">
+    <style>
+        .play-detail {
+            padding: 120px 0 60px;
+        }
+
+        .play-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+            .play-header h1 {
+                font-size: 42px;
+                margin-bottom: 15px;
+                background: linear-gradient(135deg, #4a90e2, #7b68ee);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+
+        .play-meta {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .play-meta-item {
+            background: rgba(255,255,255,0.05);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+        }
+
+        .play-content {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+            .play-content h3 {
+                color: #7b68ee;
+                margin: 20px 0 10px;
+            }
+
+        .roles-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .role-item {
+            background: rgba(255,255,255,0.03);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .performances-list {
+            margin-top: 30px;
+        }
+
+        .performance-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-buy {
+            background: linear-gradient(135deg, #4a90e2, #7b68ee);
+            padding: 8px 25px;
+            border-radius: 25px;
+            color: white;
+            text-decoration: none;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 30px;
+            background: transparent;
+            border: 1px solid #7b68ee;
+            padding: 10px 25px;
+            border-radius: 25px;
+            color: #7b68ee;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">♛</div>
+                    <h1>Театр "Irbis"</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="/">Главная</a></li>
+                        <li><a href="/#playbill">Афиша</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="play-detail">
+        <div class="container">
+            <div class="play-header">
+                <h1>@Model.Title</h1>
+                <div class="play-meta">
+                    <div class="play-meta-item">✍️ @Model.Author?.Fio</div>
+                    <div class="play-meta-item">🎭 @Model.Genre?.Name</div>
+                    <div class="play-meta-item">🎯 @Model.TargetAudience</div>
+                    @if (Model.PremiereDate.HasValue)
+                    {
+                        <div class="play-meta-item">📅 Премьера: @Model.PremiereDate.Value.ToString("dd.MM.yyyy")</div>
+                    }
+                </div>
+            </div>
+
+            <div class="play-content">
+                <h3>📖 О спектакле</h3>
+                <p>@Model.Description</p>
+
+                @if (Model.Roles != null && Model.Roles.Any())
+                {
+                    <h3>🎭 Роли в спектакле</h3>
+                    <div class="roles-list">
+                        @foreach (var role in Model.Roles)
+                        {
+                            <div class="role-item">
+                                <strong>@role.Name</strong><br>
+                                <small>@role.GenderRequirement, @role.AgeRange</small>
+                            </div>
+                        }
+                    </div>
+                }
+
+                @if (performances != null && performances.Any())
+                {
+                    <h3>📅 Ближайшие показы</h3>
+                    <div class="performances-list">
+                        @foreach (var perf in performances)
+                        {
+                            <div class="performance-item">
+                                <div>
+                                    <strong>@perf.Datetime.ToString("dd.MM.yyyy")</strong> в @perf.Datetime.ToString("HH:mm")
+                                </div>
+                                <div>
+                                    Цена от @perf.BasePrice ₽
+                                </div>
+                                <a href="/Tickets/PurchaseByPerformance?performanceId=@perf.Id" class="btn-buy">Купить билет</a>
+                            </div>
+                        }
+                    </div>
+                }
+
+                <a href="/#playbill" class="back-btn">← Назад к афише</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/js/main.js"></script>
+</body>
+</html>

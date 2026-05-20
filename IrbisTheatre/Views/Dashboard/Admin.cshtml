@@ -1,0 +1,44 @@
+﻿@{
+    ViewData["Title"] = "Панель администратора";
+    Layout = "_DashboardLayout";
+}
+
+<div class="content-section active" id="dashboard-section">
+    <div style="margin-bottom: 30px;">
+        <h2 style="font-size: 28px; margin-bottom: 8px;">Панель администратора</h2>
+        <p style="color: #aaa;">Управление театром "Ирбис"</p>
+    </div>
+
+    <div class="stats-grid">
+        <a href="/Dashboard/Employees" class="stat-card" style="text-decoration: none; display: block;">
+            <div class="stat-icon">👥</div>
+            <h4>Сотрудники</h4>
+            <div class="stat-value">@ViewBag.EmployeesCount</div>
+        </a>
+        <a href="/Dashboard/Plays" class="stat-card" style="text-decoration: none; display: block;">
+            <div class="stat-icon">🎭</div>
+            <h4>Спектакли</h4>
+            <div class="stat-value">@ViewBag.PlaysCount</div>
+        </a>
+        <a href="/Dashboard/Performances" class="stat-card" style="text-decoration: none; display: block;">
+            <div class="stat-icon">📅</div>
+            <h4>Показы</h4>
+            <div class="stat-value">@ViewBag.PerformancesCount</div>
+        </a>
+        <a href="/Dashboard/Tickets" class="stat-card" style="text-decoration: none; display: block;">
+            <div class="stat-icon">🎫</div>
+            <h4>Продано билетов</h4>
+            <div class="stat-value">@ViewBag.TicketsSold</div>
+        </a>
+    </div>
+
+    <div class="card">
+        <h3 class="card-title">⚡ Быстрые действия</h3>
+        <div class="actions-grid">
+            <a href="/Dashboard/Employees" class="action-btn">👥 Управление персоналом</a>
+            <a href="/Dashboard/Plays" class="action-btn">🎭 Управление спектаклями</a>
+            <a href="/Dashboard/Performances" class="action-btn">📅 Управление показами</a>
+            <a href="/Dashboard/Tickets" class="action-btn">🎫 Отчёт по билетам</a>
+        </div>
+    </div>
+</div>

@@ -1,8 +1,519 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Театр «Ирбис» - Культурная жемчужина Кавказа";
+    var isAuthenticated = User.Identity.IsAuthenticated;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Театр "Irbis" - Культурная жемчужина Кавказа</title>
+    <link rel="stylesheet" href="~/css/stars.css">
+    <link rel="stylesheet" href="~/css/main.css">
+    <style>
+        /* Дополнительные стили для афиши */
+        .plays-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .play-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(123, 104, 238, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+            .play-card:hover {
+                transform: translateY(-5px);
+                border-color: rgba(123, 104, 238, 0.6);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            }
+
+        .play-image {
+            height: 180px;
+            background: linear-gradient(135deg, #1a1a4a, #2a2a5a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #7b68ee;
+        }
+
+        .play-info {
+            padding: 20px;
+        }
+
+            .play-info h3 {
+                font-size: 20px;
+                margin-bottom: 8px;
+            }
+
+            .play-info .author {
+                color: #aaa;
+                font-size: 13px;
+                margin-bottom: 8px;
+            }
+
+            .play-info .genre {
+                display: inline-block;
+                background: rgba(123, 104, 238, 0.2);
+                padding: 4px 12px;
+                border-radius: 20px;
+                font-size: 11px;
+                margin-bottom: 12px;
+            }
+
+            .play-info .description {
+                font-size: 13px;
+                color: #ccc;
+                line-height: 1.5;
+                margin-bottom: 15px;
+            }
+
+        .play-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-detail {
+            flex: 1;
+            background: rgba(123, 104, 238, 0.3);
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .btn-buy {
+            flex: 1;
+            background: linear-gradient(135deg, #4a90e2, #7b68ee);
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+            .btn-detail:hover, .btn-buy:hover {
+                opacity: 0.9;
+                transform: translateY(-2px);
+            }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #aaa;
+        }
+
+        .employee-notice {
+            font-size: 14px;
+            color: #7b68ee;
+            margin-top: 15px;
+            font-style: italic;
+        }
+
+        .access-notice {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
+        }
+
+        .halls {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .hall-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(123, 104, 238, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            width: 280px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+            .hall-card:hover {
+                transform: translateY(-10px);
+                border-color: rgba(123, 104, 238, 0.6);
+            }
+
+        .hall-icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+
+        .hall-card h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .hall-card p {
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+
+        .about {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+            .about p {
+                font-size: 18px;
+                line-height: 1.6;
+                margin-bottom: 20px;
+                opacity: 0.9;
+            }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
+        }
+
+            .footer-section h3 {
+                color: #7b68ee;
+                margin-bottom: 20px;
+                font-size: 18px;
+            }
+
+            .footer-section p, .footer-section a {
+                color: #ccc;
+                margin-bottom: 10px;
+                display: block;
+                text-decoration: none;
+            }
+
+                .footer-section a:hover {
+                    color: #7b68ee;
+                }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+            color: #888;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 25px;
+            border-radius: 50px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(123,104,238,0.4);
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+            .search-input:focus {
+                border-color: #7b68ee;
+                background: rgba(255,255,255,0.15);
+                box-shadow: 0 0 15px rgba(123,104,238,0.3);
+            }
+
+            .search-input::placeholder {
+                color: #aaa;
+            }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>Театр "Irbis"</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#main">Главная</a></li>
+                        <li><a href="#halls">Залы</a></li>
+                        <li><a href="#playbill">Афиша</a></li>
+                        <li><a href="#about">О театре</a></li>
+                        <li><a href="#contacts">Контакты</a></li>
+                    </ul>
+                </nav>
+                <div class="auth-buttons">
+                    @if (isAuthenticated)
+                    {
+                        <span class="user-greeting">@User.Identity.Name</span>
+                        <a href="@Url.Action("Index", "Dashboard")" class="btn-outline">Личный кабинет</a>
+                        <a href="@Url.Action("Logout", "Account")" class="btn-outline">Выйти</a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Login", "Account")" class="btn-outline">Сотрудникам</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Главный баннер -->
+    <section class="hero" id="main">
+        <div class="container">
+            <h2>Добро пожаловать в театр "Irbis"</h2>
+            <p>Окунитесь в мир искусства и магии театра в самом сердце Кавказа. У нас два зала - Большой и Малый, где каждый найдет представление по душе.</p>
+            <p class="employee-notice">*Вход и регистрация доступны только сотрудникам театра</p>
+            <a href="#playbill" class="cta-button">Смотреть афишу</a>
+        </div>
+    </section>
+
+    <!-- Залы театра -->
+    <section id="halls">
+        <div class="container">
+            <h2 class="section-title">Наши залы</h2>
+            <div class="halls" id="halls-container">
+                <div class="loading">Загрузка залов...</div>
+            </div>
+        </div>
+    </section>
+
+    
+
+    <!-- Афиша -->
+    <section id="playbill">
+        <div class="container">
+            <h2 class="section-title">Афиша спектаклей</h2>
+            <!-- Строка поиска -->
+            <div class="search-container" style="margin-bottom: 30px;">
+                <input type="text"
+                       id="searchInput"
+                       class="search-input"
+                       placeholder="🔍 Поиск спектакля по названию или автору..."
+                       style="width: 100%; padding: 15px 20px; border-radius: 50px; background: rgba(255,255,255,0.1); border: 1px solid rgba(123,104,238,0.5); color: white; font-size: 16px; outline: none; transition: all 0.3s;">
+            </div>
+            <div class="plays-grid" id="plays-container">
+                <div class="loading">Загрузка спектаклей...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- О театре -->
+    <section id="about">
+        <div class="container">
+            <h2 class="section-title">О театре</h2>
+            <div class="about">
+                <p>Театр "Irbis" - это культурная жемчужина Кавказа, основанная в 1995 году. Мы сочетаем традиции кавказского искусства с современными театральными тенденциями.</p>
+                <p>Наш театр известен своими уникальными постановками, которые отражают богатую культуру и историю народов Кавказа. Мы гордимся нашими талантливыми актерами, режиссерами и всей творческой командой.</p>
+                <p>Приходите к нам, чтобы окунуться в мир искусства, эмоций и вдохновения!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Подвал -->
+    <footer id="contacts">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Контакты</h3>
+                    <p>г. Владикавказ, ул. Театральная, 15</p>
+                    <p>+7 (8672) 12-34-56</p>
+                    <p>info@irbis-theatre.ru</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Режим работы</h3>
+                    <p>Касса: 10:00 - 19:00</p>
+                    <p>Спектакли: 18:00 - 22:00</p>
+                    <p>Выходной: понедельник</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Сотрудникам</h3>
+                    <a href="@Url.Action("Login", "Account")">Вход в систему</a>
+                    <a href="@Url.Action("Register", "Account")">Регистрация</a>
+                    <a href="#contacts">Служебные контакты</a>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Театр "Irbis". Все права защищены.</p>
+                <p class="access-notice">Доступ к системе управления ограничен сотрудниками театра</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/js/main.js"></script>
+    <script>
+                function loadPlays() {
+            const container = document.getElementById('plays-container');
+            if (!container) return;
+
+            fetch('/Home/GetPlays')
+                .then(res => res.json())
+                .then(data => {
+                    if (!data || data.length === 0) {
+                        container.innerHTML = '<div class="loading">Спектаклей пока нет</div>';
+                        return;
+                    }
+
+                    container.innerHTML = data.map(play => `
+                        <div class="play-card">
+                            <div class="play-image">🎭</div>
+                            <div class="play-info">
+                                <h3>${escapeHtml(play.title)}</h3>
+                                <div class="author">${escapeHtml(play.author || 'Неизвестный автор')}</div>
+                                <div class="genre">${escapeHtml(play.genre || 'Драма')}</div>
+                                <div class="description">${escapeHtml(play.description?.substring(0, 100) || '')}...</div>
+                                <div class="play-buttons">
+                                    <a href="/Plays/Details/${play.id}" class="btn-detail">Подробнее</a>
+                                    <a href="/Tickets/PurchaseByPlay?playId=${play.id}" class="btn-buy">Купить билет</a>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    container.innerHTML = '<div class="loading">Ошибка загрузки спектаклей</div>';
+                });
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            if (!starsContainer) return;
+            starsContainer.innerHTML = '';
+            for (let i = 0; i < 200; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.width = `${Math.random() * 3}px`;
+                star.style.height = star.style.width;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.animationDelay = `${Math.random() * 5}s`;
+                starsContainer.appendChild(star);
+            }
+        }
+
+        function setupSmoothScroll() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement && !this.classList.contains('btn-detail') && !this.classList.contains('btn-buy')) {
+                        e.preventDefault();
+                        const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+                        window.scrollTo({ top: targetElement.offsetTop - headerHeight - 20, behavior: 'smooth' });
+                    }
+                });
+            });
+        }
+
+                // Загрузка залов
+        function loadHalls() {
+            const container = document.getElementById('halls-container');
+            if (!container) return;
+
+            fetch('/Home/GetHalls')
+                .then(res => res.json())
+                .then(data => {
+                    if (!data || data.length === 0) {
+                        container.innerHTML = '<div class="loading">Информация о залах скоро появится</div>';
+                        return;
+                    }
+
+                    container.innerHTML = data.map(hall => `
+                        <div class="hall-card">
+                            <div class="hall-icon">${hall.icon}</div>
+                            <h3>${escapeHtml(hall.name)}</h3>
+                            <p>${escapeHtml(hall.description)}</p>
+                        </div>
+                    `).join('');
+                })
+                .catch(error => {
+                    console.error('Ошибка загрузки залов:', error);
+                    container.innerHTML = '<div class="loading">Ошибка загрузки информации о залах</div>';
+                });
+        }
+
+                // Поиск спектаклей
+                let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            const query = this.value;
+            if (query.length >= 2 || query.length === 0) {
+                searchPlays(query);
+            }
+        });
+
+                function searchPlays(query) {
+            const container = document.getElementById('plays-container');
+            if (!container) return;
+
+            if (!query || query.length === 0) {
+                loadPlays();
+                return;
+            }
+
+            container.innerHTML = '<div style="text-align: center; padding: 60px 20px; color: #aaa;">🔍 Поиск...</div>';
+
+            fetch(`/Home/SearchPlays?query=${encodeURIComponent(query)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data || data.length === 0) {
+                        container.innerHTML = '<div style="text-align: center; padding: 60px 20px; color: #aaa; font-size: 18px;">😔 Ничего не найдено<br><span style="font-size: 14px;">Попробуйте изменить запрос</span></div>';
+                        return;
+                    }
+
+                    container.innerHTML = data.map(play => `
+                        <div class="play-card">
+                            <div class="play-image">🎭</div>
+                            <div class="play-info">
+                                <h3>${escapeHtml(play.title)}</h3>
+                                <div class="author">${escapeHtml(play.author || 'Неизвестный автор')}</div>
+                                <div class="genre">${escapeHtml(play.genre || 'Драма')}</div>
+                                <div class="description">${escapeHtml(play.description?.substring(0, 100) || '')}...</div>
+                                <div class="play-buttons">
+                                    <a href="/Plays/Details/${play.id}" class="btn-detail">Подробнее</a>
+                                    <a href="/Tickets/Purchase?playId=${play.id}" class="btn-buy">Купить билет</a>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                })
+                .catch(error => {
+                    console.error('Ошибка поиска:', error);
+                    container.innerHTML = '<div style="text-align: center; padding: 60px 20px; color: #aaa;">❌ Ошибка при поиске</div>';
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            createStars();
+            loadPlays();
+            loadHalls();
+            setupSmoothScroll();
+        });
+    </script>
+</body>
+</html>

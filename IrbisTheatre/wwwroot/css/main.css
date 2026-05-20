@@ -1,0 +1,400 @@
+/* Основные стили */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(to bottom, #0a0a2a, #1a1a4a, #0a0a2a);
+    color: #fff;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Шапка сайта */
+header {
+    background: rgba(10, 10, 42, 0.9);
+    backdrop-filter: blur(10px);
+    padding: 15px 0;
+    position: fixed;
+    width: 100%;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-icon {
+    font-size: 32px;
+    color: #7b68ee;
+}
+
+.logo h1 {
+    font-size: 28px;
+    background: linear-gradient(135deg, #4a90e2, #7b68ee);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #aaa;
+    font-size: 16px;
+}
+header .logo-image {
+    height: 68px;
+    width: 68px;
+    object-fit: contain;
+    margin-right: 15px;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 25px;
+}
+
+    nav ul li a {
+        color: #fff;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s;
+        position: relative;
+    }
+
+        nav ul li a:hover {
+            color: #7b68ee;
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #4a90e2, #7b68ee);
+            transition: width 0.3s;
+        }
+
+        nav ul li a:hover::after {
+            width: 100%;
+        }
+
+/* Кнопки */
+.btn-primary, .btn-outline {
+    padding: 8px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #4a90e2, #7b68ee);
+    border: none;
+    color: white;
+}
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(123, 104, 238, 0.5);
+    }
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid #7b68ee;
+    color: #fff;
+}
+
+    .btn-outline:hover {
+        background: rgba(123, 104, 238, 0.2);
+    }
+
+.auth-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.user-greeting {
+    color: #7b68ee;
+    font-weight: 500;
+}
+
+/* Герой-секция */
+.hero {
+    padding: 180px 0 100px;
+    text-align: center;
+}
+
+    .hero h2 {
+        font-size: 48px;
+        margin-bottom: 20px;
+        text-shadow: 0 0 20px rgba(123, 104, 238, 0.5);
+    }
+
+    .hero p {
+        font-size: 18px;
+        max-width: 700px;
+        margin: 0 auto 30px;
+        line-height: 1.6;
+        opacity: 0.9;
+    }
+
+.cta-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #4a90e2, #7b68ee);
+    color: white;
+    padding: 14px 35px;
+    border-radius: 40px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 18px;
+    transition: all 0.3s;
+    box-shadow: 0 5px 20px rgba(123, 104, 238, 0.4);
+}
+
+    .cta-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(123, 104, 238, 0.6);
+    }
+
+/* Секции */
+section {
+    padding: 80px 0;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 36px;
+    margin-bottom: 50px;
+    position: relative;
+}
+
+    .section-title::after {
+        content: '';
+        display: block;
+        width: 80px;
+        height: 3px;
+        background: linear-gradient(90deg, #4a90e2, #7b68ee);
+        margin: 15px auto 0;
+        border-radius: 2px;
+    }
+
+/* Карточки залов */
+.halls {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.hall-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(123, 104, 238, 0.3);
+    border-radius: 16px;
+    padding: 30px;
+    width: 280px;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+    .hall-card:hover {
+        transform: translateY(-10px);
+        border-color: rgba(123, 104, 238, 0.6);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    }
+
+.hall-icon {
+    font-size: 50px;
+    margin-bottom: 20px;
+}
+
+.hall-card h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.hall-card p {
+    opacity: 0.8;
+    margin-bottom: 8px;
+}
+
+/* Афиша */
+.playbill {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.play-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(123, 104, 238, 0.3);
+    border-radius: 16px;
+    overflow: hidden;
+    width: 300px;
+    transition: all 0.3s;
+}
+
+    .play-card:hover {
+        transform: translateY(-10px);
+        border-color: rgba(123, 104, 238, 0.6);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    }
+
+.play-image {
+    height: 180px;
+    background: linear-gradient(135deg, #4a90e2, #7b68ee);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+}
+
+.play-info {
+    padding: 20px;
+}
+
+    .play-info h3 {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    .play-info p {
+        font-size: 14px;
+        opacity: 0.8;
+        margin-bottom: 15px;
+    }
+
+.play-button {
+    display: block;
+    text-align: center;
+    background: rgba(123, 104, 238, 0.3);
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+    .play-button:hover {
+        background: rgba(123, 104, 238, 0.6);
+    }
+
+/* О театре */
+.about {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+    .about p {
+        font-size: 18px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        opacity: 0.9;
+    }
+
+/* Подвал */
+footer {
+    background: rgba(10, 10, 42, 0.95);
+    padding: 50px 0 30px;
+    margin-top: 50px;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 200px;
+}
+
+    .footer-section h3 {
+        color: #7b68ee;
+        margin-bottom: 20px;
+        font-size: 18px;
+    }
+
+    .footer-section p, .footer-section a {
+        color: #ccc;
+        margin-bottom: 10px;
+        display: block;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+        .footer-section a:hover {
+            color: #7b68ee;
+        }
+
+.copyright {
+    text-align: center;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 14px;
+    color: #888;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    nav ul {
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .hero {
+        padding: 200px 0 80px;
+    }
+
+        .hero h2 {
+            font-size: 32px;
+        }
+
+    .section-title {
+        font-size: 28px;
+    }
+
+    .auth-buttons {
+        margin-top: 10px;
+    }
+}

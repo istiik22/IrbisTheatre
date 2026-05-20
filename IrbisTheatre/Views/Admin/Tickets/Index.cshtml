@@ -1,0 +1,132 @@
+﻿@{
+    ViewData["Title"] = "Проданные билеты";
+    Layout = "_DashboardLayout";
+    var tickets = ViewBag.Tickets as List<IrbisTheatre.Models.Ticket>;
+    var fromDate = ViewBag.FromDate as DateTime?;
+    var toDate = ViewBag.ToDate as DateTime?;
+    var selectedPlayId = ViewBag.SelectedPlayId as int?;
+}
+
+<div class="content-section active" id="dashboard-section">
+    <div style="margin-bottom: 25px;">
+        <h2 style="font-size: 28px; margin-bottom: 5px;">🎫 Проданные билеты</h2>
+        <p style="color: #aaa;">Статистика продаж и отчёты</p>
+    </div>
+
+    <div class="card" style="margin-bottom: 20px;">
+        <h3 class="card-title">🔍 Фильтры</h3>
+        <form method="get" action="/Dashboard/Tickets">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Спектакль</label>
+                    <select name="playId" class="form-control">
+                        <option value="">Все спектакли</option>
+                        @if (ViewBag.Plays != null)
+                        {
+                            foreach (var play in ViewBag.Plays)
+                            {
+                                <option value="@play.Id" selected="@(selectedPlayId == play.Id)">@play.Title</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Дата от</label>
+                    <input type="date" name="fromDate" class="form-control" value="@fromDate?.ToString("yyyy-MM-dd")">
+                </div>
+                <div class="form-group">
+                    <label>Дата до</label>
+                    <input type="date" name="toDate" class="form-control" value="@toDate?.ToString("yyyy-MM-dd")">
+                </div>
+                <div class="form-group" style="display: flex; align-items: flex-end;">
+                    <button type="submit" class="btn-primary" style="width: 100%;">🔍 Применить</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
+            <h3 class="card-title" style="margin-bottom: 0;">📊 Список билетов</h3>
+            <div style="font-size: 20px; color: #2ecc71;">Всего продано: @(tickets?.Count ?? 0) шт.</div>
+        </div>
+        <div style="overflow-x: auto;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>№ билета</th>
+                        <th>Спектакль</th>
+                        <th>Дата показа</th>
+                        <th>Место</th>
+                        <th>Цена</th>
+                        <th>Статус</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (tickets != null && tickets.Any())
+                    {
+                        foreach (var ticket in tickets)
+                        {
+                            <tr>
+                                <td>@ticket.UniqueNumber</td>
+                                <td>@ticket.Performance?.Play?.Title</td>
+                                <td>@ticket.Performance?.Datetime.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>Ряд @ticket.Seat?.RowNumber, Место @ticket.Seat?.SeatNumber</td>
+                                <td>@ticket.Price ₽</td>
+                                <td><span class="status-badge status-sold">Продано</span></td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" style="text-align: center;">Нет проданных билетов</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 0.8fr;
+        gap: 20px;
+        align-items: end;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #ccc;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px 15px;
+        border-radius: 8px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(123,104,238,0.3);
+        color: white;
+    }
+
+    .status-badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+    }
+
+    .status-sold {
+        background: rgba(46,204,113,0.2);
+        color: #2ecc71;
+    }
+
+    @@media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+    }
+</style>
