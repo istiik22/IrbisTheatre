@@ -213,6 +213,31 @@ public class DatabaseInitializer
             CREATE INDEX IF NOT EXISTS ""IX_EmployerProperties_EmployerId"" ON ""EmployerProperties"" (""EmployerId"");
             CREATE INDEX IF NOT EXISTS ""IX_EmployerProperties_PropertyId"" ON ""EmployerProperties"" (""PropertyId"");
 
+            
+            -- Таблица репетиций
+            CREATE TABLE IF NOT EXISTS ""Rehearsals"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""Datetime"" TIMESTAMP NOT NULL,
+                ""Location"" VARCHAR(100) NOT NULL,
+                ""Description"" TEXT NULL,
+                ""Status"" VARCHAR(50) DEFAULT 'запланирована',
+                ""PlayId"" INTEGER NOT NULL REFERENCES ""Plays""(""Id"") ON DELETE CASCADE
+            );
+
+            -- Таблица участников репетиций
+            CREATE TABLE IF NOT EXISTS ""RehearsalParticipants"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""RehearsalId"" INTEGER NOT NULL REFERENCES ""Rehearsals""(""Id"") ON DELETE CASCADE,
+                ""EmployerId"" INTEGER NOT NULL REFERENCES ""Employers""(""Id"") ON DELETE CASCADE,
+                ""Role"" VARCHAR(50) NULL
+            );
+
+            -- Индексы
+            CREATE INDEX IF NOT EXISTS ""IX_Rehearsals_Datetime"" ON ""Rehearsals"" (""Datetime"");
+            CREATE INDEX IF NOT EXISTS ""IX_Rehearsals_PlayId"" ON ""Rehearsals"" (""PlayId"");
+            CREATE INDEX IF NOT EXISTS ""IX_RehearsalParticipants_RehearsalId"" ON ""RehearsalParticipants"" (""RehearsalId"");
+            CREATE INDEX IF NOT EXISTS ""IX_RehearsalParticipants_EmployerId"" ON ""RehearsalParticipants"" (""EmployerId"");
+
 
             -- ТРИГГЕРЫ
 
@@ -851,9 +876,9 @@ public class DatabaseInitializer
 
             -- Архивная таблица
             CREATE TABLE IF NOT EXISTS ""Employers_Arch"" (LIKE ""Employers"" INCLUDING ALL);
-            ALTER TABLE ""Employers_Arch"" ADD COLUMN ""JournalId"" INT;
-            ALTER TABLE ""Employers_Arch"" ADD COLUMN ""OperationType"" VARCHAR(10);
-            ALTER TABLE ""Employers_Arch"" ADD COLUMN ""OperationTime"" TIMESTAMP DEFAULT NOW();
+            ALTER TABLE ""Employers_Arch"" ADD COLUMN IF NOT EXISTS ""JournalId"" INT;
+            ALTER TABLE ""Employers_Arch"" ADD COLUMN IF NOT EXISTS ""OperationType"" VARCHAR(10);
+            ALTER TABLE ""Employers_Arch"" ADD COLUMN IF NOT EXISTS ""OperationTime"" TIMESTAMP DEFAULT NOW();
 
             -- Функция для INSERT
             CREATE OR REPLACE FUNCTION tr_Employers_insert()
@@ -934,6 +959,86 @@ public class DatabaseInitializer
                 FOR EACH ROW 
                 EXECUTE FUNCTION tr_Employers_delete();
 
+
+            -- Триггеры для таблицы Rehearsals
+            -- Архивная таблица
+            CREATE TABLE IF NOT EXISTS ""Rehearsals_Arch"" (LIKE ""Rehearsals"" INCLUDING ALL);
+            ALTER TABLE ""Rehearsals_Arch"" ADD COLUMN IF NOT EXISTS ""JournalId"" INT;
+            ALTER TABLE ""Rehearsals_Arch"" ADD COLUMN IF NOT EXISTS ""OperationType"" VARCHAR(10);
+            ALTER TABLE ""Rehearsals_Arch"" ADD COLUMN IF NOT EXISTS ""OperationTime"" TIMESTAMP DEFAULT NOW();
+
+            -- Функция для INSERT
+            CREATE OR REPLACE FUNCTION tr_Rehearsals_insert()
+            RETURNS TRIGGER AS $$
+            DECLARE j_id INT;
+            BEGIN
+                INSERT INTO ""Journal"" (""TableName"", ""Operation"", ""OperationTime"", ""UserName"")
+                VALUES ('Rehearsals', 'INSERT', NOW(), CURRENT_USER) RETURNING ""Id"" INTO j_id;
+    
+                INSERT INTO ""Rehearsals_Arch"" (
+                    ""Id"", ""Datetime"", ""Location"", ""Description"", ""Status"", ""PlayId"", 
+                    ""JournalId"", ""OperationType""
+                ) VALUES (
+                    NEW.""Id"", NEW.""Datetime"", NEW.""Location"", NEW.""Description"", NEW.""Status"", NEW.""PlayId"", 
+                    j_id, 'INSERT'
+                );
+                RETURN NEW;
+            END; $$ LANGUAGE plpgsql;
+
+            -- Функция для UPDATE
+            CREATE OR REPLACE FUNCTION tr_Rehearsals_update()
+            RETURNS TRIGGER AS $$
+            DECLARE j_id INT;
+            BEGIN
+                INSERT INTO ""Journal"" (""TableName"", ""Operation"", ""OperationTime"", ""UserName"")
+                VALUES ('Rehearsals', 'UPDATE', NOW(), CURRENT_USER) RETURNING ""Id"" INTO j_id;
+    
+                INSERT INTO ""Rehearsals_Arch"" (
+                    ""Id"", ""Datetime"", ""Location"", ""Description"", ""Status"", ""PlayId"", 
+                    ""JournalId"", ""OperationType""
+                ) VALUES (
+                    NEW.""Id"", NEW.""Datetime"", NEW.""Location"", NEW.""Description"", NEW.""Status"", NEW.""PlayId"", 
+                    j_id, 'UPDATE'
+                );
+                RETURN NEW;
+            END; $$ LANGUAGE plpgsql;
+
+            -- Функция для DELETE
+            CREATE OR REPLACE FUNCTION tr_Rehearsals_delete()
+            RETURNS TRIGGER AS $$
+            DECLARE j_id INT;
+            BEGIN
+                INSERT INTO ""Journal"" (""TableName"", ""Operation"", ""OperationTime"", ""UserName"")
+                VALUES ('Rehearsals', 'DELETE', NOW(), CURRENT_USER) RETURNING ""Id"" INTO j_id;
+    
+                INSERT INTO ""Rehearsals_Arch"" (
+                    ""Id"", ""Datetime"", ""Location"", ""Description"", ""Status"", ""PlayId"", 
+                    ""JournalId"", ""OperationType""
+                ) VALUES (
+                    OLD.""Id"", OLD.""Datetime"", OLD.""Location"", OLD.""Description"", OLD.""Status"", OLD.""PlayId"", 
+                    j_id, 'DELETE'
+                );
+                RETURN OLD;
+            END; $$ LANGUAGE plpgsql;
+
+            -- Создание триггеров
+            DROP TRIGGER IF EXISTS trigger_Rehearsals_insert ON ""Rehearsals"";
+            CREATE TRIGGER trigger_Rehearsals_insert 
+                AFTER INSERT ON ""Rehearsals"" 
+                FOR EACH ROW 
+                EXECUTE FUNCTION tr_Rehearsals_insert();
+
+            DROP TRIGGER IF EXISTS trigger_Rehearsals_update ON ""Rehearsals"";
+            CREATE TRIGGER trigger_Rehearsals_update 
+                AFTER UPDATE ON ""Rehearsals"" 
+                FOR EACH ROW 
+                EXECUTE FUNCTION tr_Rehearsals_update();
+
+            DROP TRIGGER IF EXISTS trigger_Rehearsals_delete ON ""Rehearsals"";
+            CREATE TRIGGER trigger_Rehearsals_delete 
+                BEFORE DELETE ON ""Rehearsals"" 
+                FOR EACH ROW 
+                EXECUTE FUNCTION tr_Rehearsals_delete();
         ";
 
 

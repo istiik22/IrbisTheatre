@@ -26,7 +26,6 @@
             color: #fff;
         }
 
-        /* Шапка */
         .dashboard-header {
             background: rgba(10, 10, 42, 0.95);
             backdrop-filter: blur(10px);
@@ -112,14 +111,12 @@
                 border-color: #ff4757;
             }
 
-        /* Основной контейнер */
         .dashboard-wrapper {
             display: flex;
             margin-top: 65px;
             min-height: calc(100vh - 65px);
         }
 
-        /* Сайдбар */
         .sidebar {
             width: 260px;
             background: rgba(10, 10, 42, 0.9);
@@ -171,14 +168,12 @@
             width: 24px;
         }
 
-        /* Основной контент */
         .main-content {
             flex: 1;
             margin-left: 260px;
             padding: 30px;
         }
 
-        /* Карточки */
         .card {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
@@ -199,7 +194,6 @@
             color: #7b68ee;
         }
 
-        /* Статистика */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -227,7 +221,6 @@
             color: #7b68ee;
         }
 
-        /* Быстрые действия */
         .actions-grid {
             display: flex;
             gap: 15px;
@@ -249,7 +242,6 @@
                 transform: translateY(-2px);
             }
 
-        /* Кнопки */
         .btn-primary {
             background: linear-gradient(135deg, #4a90e2, #7b68ee);
             border: none;
@@ -260,16 +252,6 @@
             cursor: pointer;
         }
 
-        .btn-outline {
-            background: transparent;
-            border: 1px solid #7b68ee;
-            padding: 8px 20px;
-            border-radius: 25px;
-            color: #7b68ee;
-            cursor: pointer;
-        }
-
-        /* Таблицы */
         .data-table {
             width: 100%;
             border-collapse: collapse;
@@ -286,7 +268,6 @@
                 font-weight: 600;
             }
 
-        /* Секции контента */
         .content-section {
             display: none;
             animation: fadeIn 0.3s ease;
@@ -308,7 +289,6 @@
             }
         }
 
-        /* Адаптивность */
         @@media (max-width: 768px) {
             .sidebar {
                 width: 70px;
@@ -333,6 +313,7 @@
 
     <header class="dashboard-header">
         <div class="logo-area">
+            <div class="logo-icon">♛</div>
             <h1>Театр "Irbis"</h1>
         </div>
         <div class="header-right">
@@ -350,23 +331,17 @@
     <div class="dashboard-wrapper">
         <aside class="sidebar">
             <nav class="sidebar-nav">
-                <ul>
-                    <li><a href="#dashboard" data-section="dashboard" class="active"><span class="nav-icon">📊</span><span class="nav-text">Обзор</span></a></li>
-                    <li><a href="#profile" data-section="profile"><span class="nav-icon">👤</span><span class="nav-text">Профиль</span></a></li>
-                    <li><a href="#schedule" data-section="schedule"><span class="nav-icon">📅</span><span class="nav-text">Расписание</span></a></li>
-                    @if (role == "Admin" || role == "Director" || role == "Actor")
-                    {
-                        <li><a href="#roles" data-section="roles"><span class="nav-icon">🎭</span><span class="nav-text">Роли</span></a></li>
-                    }
-                    @if (role == "Admin" || role == "Cashier")
-                    {
-                        <li><a href="#tickets" data-section="tickets"><span class="nav-icon">🎫</span><span class="nav-text">Билеты</span></a></li>
-                    }
-                    @if (role == "Admin" || role == "Director")
-                    {
-                        <li><a href="#reports" data-section="reports"><span class="nav-icon">📈</span><span class="nav-text">Отчёты</span></a></li>
-                    }
-                    <li><a href="#settings" data-section="settings"><span class="nav-icon">⚙️</span><span class="nav-text">Настройки</span></a></li>
+                <ul style="display: block; list-style: none; padding: 0;">
+                    <li style="display: block; width: 100%;"><a href="/Dashboard/Admin" style="display: flex; align-items: center; gap: 14px; padding: 12px 24px; color: #ccc; text-decoration: none;"><span class="nav-icon">📊</span><span class="nav-text">Обзор</span></a></li>
+                    <li style="display: block; width: 100%;"><a href="/Dashboard/Employees" style="display: flex; align-items: center; gap: 14px; padding: 12px 24px; color: #ccc; text-decoration: none;"><span class="nav-icon">👥</span><span class="nav-text">Сотрудники</span></a></li>
+                    <li style="display: block; width: 100%;"><a href="/Dashboard/Plays" style="display: flex; align-items: center; gap: 14px; padding: 12px 24px; color: #ccc; text-decoration: none;"><span class="nav-icon">🎭</span><span class="nav-text">Спектакли</span></a></li>
+                    <li style="display: block; width: 100%;"><a href="/Dashboard/Performances" style="display: flex; align-items: center; gap: 14px; padding: 12px 24px; color: #ccc; text-decoration: none;"><span class="nav-icon">📅</span><span class="nav-text">Показы</span></a></li>
+                    <li style="display: block; width: 100%;"><a href="/Dashboard/Tickets" style="display: flex; align-items: center; gap: 14px; padding: 12px 24px; color: #ccc; text-decoration: none;"><span class="nav-icon">🎫</span><span class="nav-text">Билеты</span></a></li>
+                    <li style="display: block; width: 100%;"><a href="/Dashboard/Statistics" style="display: flex; align-items: center; gap: 14px; padding: 12px 24px; color: #ccc; text-decoration: none;"><span class="nav-icon">📊</span><span class="nav-text">Статистика</span></a></li>
+                    <li style="display: block; width: 100%;"><a href="#profile" data-section="profile" style="display: flex; align-items: center; gap: 14px; padding: 12px 24px; color: #ccc; text-decoration: none;"><span class="nav-icon">👤</span><span class="nav-text">Профиль</span></a></li>
+                    <li><a href="/Dashboard/Schedule"><span class="nav-icon">📅</span><span class="nav-text">Расписание</span></a></li>
+                    <li style="display: block; width: 100%;"><a href="#settings" data-section="settings" style="display: flex; align-items: center; gap: 14px; padding: 12px 24px; color: #ccc; text-decoration: none;"><span class="nav-icon">⚙️</span><span class="nav-text">Настройки</span></a></li>
+                    
                 </ul>
             </nav>
         </aside>
@@ -378,21 +353,23 @@
 
     <script src="~/js/dashboard.js"></script>
     <script>
-        // Навигация
         document.querySelectorAll('.sidebar-nav a').forEach(link => {
             link.addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelectorAll('.sidebar-nav a').forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
+                if (this.getAttribute('href') && this.getAttribute('href').startsWith('#')) {
+                    e.preventDefault();
+                    document.querySelectorAll('.sidebar-nav a').forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
 
-                const section = this.dataset.section;
-                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-                const targetSection = document.getElementById(section + '-section');
-                if (targetSection) targetSection.classList.add('active');
+                    const section = this.dataset.section;
+                    if (section) {
+                        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                        const targetSection = document.getElementById(section + '-section');
+                        if (targetSection) targetSection.classList.add('active');
+                    }
+                }
             });
         });
 
-        // Звёзды
         function createStars() {
             const container = document.getElementById('stars');
             if (!container) return;
@@ -409,9 +386,6 @@
             }
         }
         createStars();
-
-        // Активация первой секции
-        document.getElementById('dashboard-section')?.classList.add('active');
     </script>
 </body>
 </html>

@@ -350,4 +350,223 @@ public class DashboardController : Controller
 
         return View("~/Views/Admin/Tickets/Index.cshtml");
     }
+
+    // ========== СТАТИСТИКА И АНАЛИТИКА ДЛЯ АДМИНА ==========
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Statistics()
+    {
+        // 1. Самый популярный спектакль (по продажам)
+        var topPlay = await _context.Tickets
+            .Include(t => t.Performance)
+                .ThenInclude(p => p.Play)
+            .Where(t => t.Status == "sold")
+            .GroupBy(t => t.Performance.PlayId)
+            .Select(g => new
+            {
+                PlayId = g.Key,
+                PlayTitle = g.First().Performance.Play.Title,
+                TicketsSold = g.Count()
+            })
+            .OrderByDescending(x => x.TicketsSold)
+            .FirstOrDefaultAsync();
+
+        ViewBag.TopPlay = topPlay;
+
+        // 2. Самый популярный зал
+        var topHall = await _context.Tickets
+            .Include(t => t.Seat)
+                .ThenInclude(s => s.Hall)
+            .Where(t => t.Status == "sold" && t.Seat != null && t.Seat.Hall != null)
+            .GroupBy(t => t.Seat.HallId)
+            .Select(g => new
+            {
+                HallId = g.Key,
+                HallName = g.First().Seat.Hall.Name,
+                TicketsSold = g.Count()
+            })
+            .OrderByDescending(x => x.TicketsSold)
+            .FirstOrDefaultAsync();
+
+        ViewBag.TopHall = topHall;
+
+        // 3. Доход по месяцам (последние 6 месяцев)
+        var revenueByMonth = await _context.Tickets
+            .Where(t => t.Status == "sold" && t.Performance != null)
+            .GroupBy(t => new { t.Performance.Datetime.Year, t.Performance.Datetime.Month })
+            .Select(g => new
+            {
+                Year = g.Key.Year,
+                Month = g.Key.Month,
+                Revenue = g.Sum(t => t.Price)
+            })
+            .OrderByDescending(x => x.Year)
+            .ThenByDescending(x => x.Month)
+            .Take(6)
+            .ToListAsync();
+
+        ViewBag.RevenueByMonth = revenueByMonth;
+
+        // 4. Количество проданных билетов по дням (последние 7 дней)
+        var ticketsByDay = await _context.Tickets
+            .Where(t => t.Status == "sold" && t.Performance != null)
+            .GroupBy(t => t.Performance.Datetime.Date)
+            .Select(g => new
+            {
+                Date = g.Key,
+                Count = g.Count(),
+                Revenue = g.Sum(t => t.Price)
+            })
+            .OrderByDescending(x => x.Date)
+            .Take(7)
+            .ToListAsync();
+
+        ViewBag.TicketsByDay = ticketsByDay;
+
+        // 5. Общая статистика
+        ViewBag.TotalTicketsSold = await _context.Tickets.CountAsync(t => t.Status == "sold");
+        ViewBag.TotalRevenue = await _context.Tickets.Where(t => t.Status == "sold").SumAsync(t => t.Price);
+        ViewBag.TotalPlays = await _context.Plays.CountAsync();
+        ViewBag.TotalEmployees = await _context.Employers.CountAsync();
+
+        // 6. Самый активный кассир (если есть поле CreatedBy в билетах, иначе - просто кто продал)
+        // Пока оставим заглушку
+        ViewBag.TopCashier = "Ирина Моргоева"; // временно
+
+        // 7. Загрузка залов (процент занятости мест)
+        var totalSeats = await _context.Seats.CountAsync();
+        var soldTickets = await _context.Tickets.CountAsync(t => t.Status == "sold");
+        ViewBag.HallOccupancy = totalSeats > 0 ? Math.Round((double)soldTickets / totalSeats * 100, 1) : 0;
+
+        return View("~/Views/Admin/Statistics.cshtml");
+
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
+    public async Task<IActionResult> AddEvent(string eventType, int playId, string date, string time, decimal? basePrice, string location)
+    {
+        var datetime = DateTime.Parse($"{date} {time}");
+
+        if (eventType == "performance")
+        {
+            // Добавляем показ
+            var performance = new Performance
+            {
+                Datetime = datetime,
+                BasePrice = basePrice ?? 1000,
+                Status = "запланирован",
+                PlayId = playId
+            };
+            _context.Performances.Add(performance);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "Показ успешно добавлен!";
+        }
+        else if (eventType == "rehearsal")
+        {
+            // Добавляем репетицию
+            var rehearsal = new Rehearsal
+            {
+                Datetime = datetime,
+                Location = location ?? "Большая сцена",
+                Description = $"Репетиция спектакля",
+                Status = "запланирована",
+                PlayId = playId
+            };
+            _context.Rehearsals.Add(rehearsal);
+            await _context.SaveChangesAsync();
+
+            // Добавляем участников (всех актёров, занятых в этом спектакле)
+            var actorsInPlay = await _context.ProductionTeams
+                .Include(pt => pt.Employer)
+                .Where(pt => pt.Role.PlayId == playId && pt.ParticipationType == "актёр")
+                .Select(pt => pt.Employer)
+                .Distinct()
+                .ToListAsync();
+
+            foreach (var actor in actorsInPlay)
+            {
+                _context.RehearsalParticipants.Add(new RehearsalParticipant
+                {
+                    RehearsalId = rehearsal.Id,
+                    EmployerId = actor.Id,
+                    Role = actor.Position ?? "Актёр"
+                });
+            }
+
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "Репетиция успешно добавлена!";
+        }
+
+        return RedirectToAction("Schedule");
+    }
+
+    // ========== РАСПИСАНИЕ ДЛЯ ВСЕХ РОЛЕЙ ==========
+    [Authorize]
+    public async Task<IActionResult> Schedule()
+    {
+        var userId = int.Parse(User.FindFirst("UserId")?.Value ?? "0");
+        var role = User.FindFirst(ClaimTypes.Role)?.Value ?? "Staff";
+
+        List<Performance> performances = new List<Performance>();
+        List<Rehearsal> rehearsals = new List<Rehearsal>();
+
+        if (role == "Admin")
+        {
+            performances = await _context.Performances
+                .Include(p => p.Play)
+                .Where(p => p.Datetime > DateTime.Now)
+                .OrderBy(p => p.Datetime)
+                .ToListAsync();
+
+            rehearsals = await _context.Rehearsals
+                .Include(r => r.Play)
+                .Include(r => r.Participants)
+                    .ThenInclude(p => p.Employer)
+                .Where(r => r.Datetime > DateTime.Now)
+                .OrderBy(r => r.Datetime)
+                .ToListAsync();
+        }
+        else if (role == "Actor" || role == "Musician" || role == "Director")
+        {
+            // Актёры, музыканты, режиссёры видят только свои репетиции
+            var userRehearsals = await _context.RehearsalParticipants
+                .Include(rp => rp.Rehearsal)
+                    .ThenInclude(r => r.Play)
+                .Where(rp => rp.EmployerId == userId && rp.Rehearsal.Datetime > DateTime.Now)
+                .Select(rp => rp.Rehearsal)
+                .OrderBy(r => r.Datetime)
+                .ToListAsync();
+
+            rehearsals = userRehearsals;
+
+            // Показы
+            var userPerformances = await _context.PerformanceGroups
+                .Include(pg => pg.Performance)
+                    .ThenInclude(p => p.Play)
+                .Where(pg => pg.ProductionTeam.EmployerId == userId && pg.Performance.Datetime > DateTime.Now)
+                .Select(pg => pg.Performance)
+                .OrderBy(p => p.Datetime)
+                .ToListAsync();
+
+            performances = userPerformances;
+        }
+        else // Cashier, Staff
+        {
+            // Кассиры и служащие видят только показы
+            performances = await _context.Performances
+                .Include(p => p.Play)
+                .Where(p => p.Datetime > DateTime.Now)
+                .OrderBy(p => p.Datetime)
+                .ToListAsync();
+
+            rehearsals = new List<Rehearsal>();
+        }
+
+        ViewBag.Performances = performances;
+        ViewBag.Rehearsals = rehearsals;
+        ViewBag.Plays = await _context.Plays.OrderBy(p => p.Title).ToListAsync();
+        ViewBag.UserRole = role;
+
+        return View();
+    }
 }

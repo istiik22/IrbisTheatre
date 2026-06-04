@@ -555,6 +555,289 @@ public class TestDataSeeder
             }
         }
 
+        //// ================================================================
+        //// 12. РЕПЕТИЦИИ (все данные из БД)
+        //// ================================================================
+        //// Используем существующий random и startDate, не объявляем новые!
+
+        //// Получаем спектакли для репетиций
+        //var playsForRehearsals = await _context.Plays.Take(6).ToListAsync();
+
+        //// Получаем сотрудников по их реальным должностям (из БД) - используем существующий allEmployers
+        //var actors = allEmployers
+        //    .Where(e => e.Position != null &&
+        //        (e.Position.ToLower().Contains("актёр") ||
+        //         e.Position.ToLower().Contains("актер") ||
+        //         e.Position == "Ведущий актер" ||
+        //         e.Position == "Актриса"))
+        //    .ToList();
+
+        //// Режиссёры - переименовано в rehearsalDirectors
+        //var rehearsalDirectors = allEmployers
+        //    .Where(e => e.Position != null &&
+        //        (e.Position.ToLower().Contains("режис") ||
+        //         e.Position == "Режиссёр" ||
+        //         e.Position == "Режиссер"))
+        //    .ToList();
+
+        //// Музыканты
+        //var musicians = allEmployers
+        //    .Where(e => e.Position != null &&
+        //        (e.Position.ToLower().Contains("музык") ||
+        //         e.Position == "Музыкант"))
+        //    .ToList();
+
+        //// Локации берём из таблицы Halls (реальные залы из БД)
+        //var hallsList = await _context.Halls.ToListAsync();
+        //var locations = hallsList.Select(h => h.Name).ToList();
+
+        //// Если залов нет, используем значения по умолчанию
+        //if (!locations.Any())
+        //{
+        //    locations = new List<string> { "Большая сцена", "Малая сцена", "Камерный зал" };
+        //}
+
+        //var newRehearsals = new List<Rehearsal>();
+
+        //foreach (var play in playsForRehearsals)
+        //{
+        //    // По 2-3 репетиции на спектакль
+        //    int rehearsalCount = random.Next(2, 4);
+
+        //    for (int i = 0; i < rehearsalCount; i++)
+        //    {
+        //        var rehearsalDate = startDate.AddDays(random.Next(1, 30));
+        //        var rehearsalTime = new TimeSpan(random.Next(10, 20), random.Next(0, 2) * 30, 0);
+        //        var datetime = rehearsalDate.Date + rehearsalTime;
+
+        //        var rehearsal = new Rehearsal
+        //        {
+        //            Datetime = datetime,
+        //            Location = locations[random.Next(locations.Count)],
+        //            Description = $"Репетиция спектакля \"{play.Title}\"",
+        //            Status = "запланирована",
+        //            PlayId = play.Id
+        //        };
+
+        //        newRehearsals.Add(rehearsal);
+        //    }
+        //}
+
+        //_context.Rehearsals.AddRange(newRehearsals);
+        //await _context.SaveChangesAsync();
+
+        //// ================================================================
+        //// 13. УЧАСТНИКИ РЕПЕТИЦИЙ (только из реальных сотрудников)
+        //// ================================================================
+        //var rehearsalParticipants = new List<RehearsalParticipant>();
+        //var allRehearsals = await _context.Rehearsals.ToListAsync();
+
+        //foreach (var rehearsal in allRehearsals)
+        //{
+        //    // Находим режиссёра этого спектакля (из ProductionTeams)
+        //    var rehearsalDirector = await _context.ProductionTeams
+        //        .Include(pt => pt.Employer)
+        //        .Where(pt => pt.Role.PlayId == rehearsal.PlayId &&
+        //                    (pt.ParticipationType == "режиссёр-постановщик" ||
+        //                     pt.ParticipationType == "режиссёр"))
+        //        .Select(pt => pt.Employer)
+        //        .FirstOrDefaultAsync();
+
+        //    if (rehearsalDirector != null)
+        //    {
+        //        rehearsalParticipants.Add(new RehearsalParticipant
+        //        {
+        //            RehearsalId = rehearsal.Id,
+        //            EmployerId = rehearsalDirector.Id,
+        //            Role = rehearsalDirector.Position ?? "Режиссёр"
+        //        });
+        //    }
+        //    else if (rehearsalDirectors.Any())
+        //    {
+        //        var anyDirector = rehearsalDirectors.First();
+        //        rehearsalParticipants.Add(new RehearsalParticipant
+        //        {
+        //            RehearsalId = rehearsal.Id,
+        //            EmployerId = anyDirector.Id,
+        //            Role = anyDirector.Position ?? "Режиссёр"
+        //        });
+        //    }
+
+        //    // Находим актёров, которые играют в этом спектакле (из ProductionTeams)
+        //    var playActors = await _context.ProductionTeams
+        //        .Include(pt => pt.Employer)
+        //        .Where(pt => pt.Role.PlayId == rehearsal.PlayId && pt.ParticipationType == "актёр")
+        //        .Select(pt => pt.Employer)
+        //        .Distinct()
+        //        .ToListAsync();
+
+        //    if (playActors.Any())
+        //    {
+        //        int actorsCount = Math.Min(random.Next(2, 5), playActors.Count);
+        //        var selectedActors = playActors.OrderBy(x => random.Next()).Take(actorsCount);
+        //        foreach (var actor in selectedActors)
+        //        {
+        //            rehearsalParticipants.Add(new RehearsalParticipant
+        //            {
+        //                RehearsalId = rehearsal.Id,
+        //                EmployerId = actor.Id,
+        //                Role = actor.Position ?? "Актёр"
+        //            });
+        //        }
+        //    }
+        //    else if (actors.Any())
+        //    {
+        //        int actorsCount = random.Next(2, 4);
+        //        var selectedActors = actors.OrderBy(x => random.Next()).Take(actorsCount);
+        //        foreach (var actor in selectedActors)
+        //        {
+        //            rehearsalParticipants.Add(new RehearsalParticipant
+        //            {
+        //                RehearsalId = rehearsal.Id,
+        //                EmployerId = actor.Id,
+        //                Role = actor.Position ?? "Актёр"
+        //            });
+        //        }
+        //    }
+
+        //    // Находим музыкантов для этого спектакля
+        //    var playMusicians = await _context.ProductionTeams
+        //        .Include(pt => pt.Employer)
+        //        .Where(pt => pt.Role.PlayId == rehearsal.PlayId && pt.ParticipationType == "композитор")
+        //        .Select(pt => pt.Employer)
+        //        .Distinct()
+        //        .ToListAsync();
+
+        //    if (playMusicians.Any() && random.Next(0, 2) == 1)
+        //    {
+        //        int musiciansCount = random.Next(1, Math.Min(3, playMusicians.Count + 1));
+        //        var selectedMusicians = playMusicians.OrderBy(x => random.Next()).Take(musiciansCount);
+        //        foreach (var musician in selectedMusicians)
+        //        {
+        //            rehearsalParticipants.Add(new RehearsalParticipant
+        //            {
+        //                RehearsalId = rehearsal.Id,
+        //                EmployerId = musician.Id,
+        //                Role = musician.Position ?? "Музыкант"
+        //            });
+        //        }
+        //    }
+        //    else if (musicians.Any() && random.Next(0, 2) == 1)
+        //    {
+        //        int musiciansCount = random.Next(1, 3);
+        //        var selectedMusicians = musicians.OrderBy(x => random.Next()).Take(musiciansCount);
+        //        foreach (var musician in selectedMusicians)
+        //        {
+        //            rehearsalParticipants.Add(new RehearsalParticipant
+        //            {
+        //                RehearsalId = rehearsal.Id,
+        //                EmployerId = musician.Id,
+        //                Role = musician.Position ?? "Музыкант"
+        //            });
+        //        }
+        //    }
+        //}
+
+        //_context.RehearsalParticipants.AddRange(rehearsalParticipants);
+        //await _context.SaveChangesAsync();
+
+        //Console.WriteLine($"🎪 Репетиций: {newRehearsals.Count}");
+        //Console.WriteLine($"👥 Участников репетиций: {rehearsalParticipants.Count}");
+
+        // ================================================================
+        // 14. ДОПОЛНИТЕЛЬНЫЕ РЕПЕТИЦИИ (вручную)
+        // ================================================================
+        // Получаем реальные ID спектаклей по их названиям
+        var mtsyri = await _context.Plays.FirstOrDefaultAsync(p => p.Title == "Мцыри");
+        var gamlet = await _context.Plays.FirstOrDefaultAsync(p => p.Title == "Гамлет");
+        var kavkazPle = await _context.Plays.FirstOrDefaultAsync(p => p.Title == "Кавказский пленник");
+        var fatimaa = await _context.Plays.FirstOrDefaultAsync(p => p.Title == "Дуня (Фатима)");
+        var soslann = await _context.Plays.FirstOrDefaultAsync(p => p.Title == "Нарт Сослан");
+
+        if (mtsyri != null && gamlet != null && kavkazPle != null && fatimaa != null && soslann != null)
+        {
+            var manualRehearsals = new List<Rehearsal>
+    {
+        new Rehearsal
+        {
+            Datetime = new DateTime(2025, 6, 10, 14, 0, 0),
+            Location = "Большой зал им. Коста Хетагурова",
+            Description = "Репетиция спектакля \"Мцыри\"",
+            Status = "запланирована",
+            PlayId = mtsyri.Id
+        },
+        new Rehearsal
+        {
+            Datetime = new DateTime(2025, 6, 12, 16, 0, 0),
+            Location = "Малый зал Нарт",
+            Description = "Репетиция спектакля \"Гамлет\"",
+            Status = "запланирована",
+            PlayId = gamlet.Id
+        },
+        new Rehearsal
+        {
+            Datetime = new DateTime(2025, 6, 15, 11, 0, 0),
+            Location = "Камерный зал Амонд",
+            Description = "Репетиция спектакля \"Кавказский пленник\"",
+            Status = "запланирована",
+            PlayId = kavkazPle.Id
+        },
+        new Rehearsal
+        {
+            Datetime = new DateTime(2025, 6, 18, 15, 0, 0),
+            Location = "Большой зал им. Коста Хетагурова",
+            Description = "Репетиция спектакля \"Дуня (Фатима)\"",
+            Status = "запланирована",
+            PlayId = fatimaa.Id
+        },
+        new Rehearsal
+        {
+            Datetime = new DateTime(2025, 6, 20, 13, 0, 0),
+            Location = "Зимний сад Стыр Ныхас",
+            Description = "Репетиция спектакля \"Нарт Сослан\"",
+            Status = "запланирована",
+            PlayId = soslann.Id
+        }
+    };
+
+            _context.Rehearsals.AddRange(manualRehearsals);
+            await _context.SaveChangesAsync();
+
+            // Добавляем участников-актёров для этих репетиций
+            var allEmployersForManual = await _context.Employers.ToListAsync();
+            var actorsForManual = allEmployersForManual
+                .Where(e => e.Position != null &&
+                    (e.Position.Contains("Актёр") || e.Position.Contains("актёр") ||
+                     e.Position.Contains("Артист") || e.Position.Contains("артист")))
+                .ToList();
+
+            var manualParticipants = new List<RehearsalParticipant>();
+            var randomManual = new Random();
+
+            foreach (var rehearsal in manualRehearsals)
+            {
+                // Берём 2-4 случайных актёра на каждую репетицию
+                int actorsCount = randomManual.Next(2, Math.Min(5, actorsForManual.Count + 1));
+                var selectedActors = actorsForManual.OrderBy(x => randomManual.Next()).Take(actorsCount);
+
+                foreach (var actor in selectedActors)
+                {
+                    manualParticipants.Add(new RehearsalParticipant
+                    {
+                        RehearsalId = rehearsal.Id,
+                        EmployerId = actor.Id,
+                        Role = actor.Position ?? "Актёр"
+                    });
+                }
+            }
+
+            _context.RehearsalParticipants.AddRange(manualParticipants);
+            await _context.SaveChangesAsync();
+
+            Console.WriteLine($"🎪 Дополнительных репетиций (ручных): {manualRehearsals.Count}");
+            Console.WriteLine($"👥 Участников ручных репетиций: {manualParticipants.Count}");
+        }
+
         _context.PerformanceGroups.AddRange(performanceGroups);
         await _context.SaveChangesAsync();
 

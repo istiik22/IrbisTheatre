@@ -1,0 +1,368 @@
+﻿@{
+    ViewData["Title"] = "Расписание";
+    Layout = "_DashboardLayout";
+    var performances = ViewBag.Performances as List<IrbisTheatre.Models.Performance>;
+    var rehearsals = ViewBag.Rehearsals as List<IrbisTheatre.Models.Rehearsal> ?? new List<IrbisTheatre.Models.Rehearsal>();
+    var userRole = ViewBag.UserRole as string;
+    var isAdmin = userRole == "Admin";
+    var isArtist = userRole == "Actor" || userRole == "Musician" || userRole == "Director";
+}
+
+<div class="content-section active" id="schedule-section">
+    <div style="margin-bottom: 30px;">
+        <h2 style="font-size: 28px; margin-bottom: 8px;">📅 Расписание</h2>
+        <p style="color: #aaa;">
+            @if (isAdmin)
+            {
+                <span>Полное расписание театра</span>
+            }
+            else if (isArtist)
+            {
+                <span>Ваши мероприятия</span>
+            }
+            else
+            {
+                <span>Расписание спектаклей</span>
+            }
+        </p>
+    </div>
+
+    @if (isAdmin)
+    {
+        <div style="display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid rgba(123,104,238,0.3);">
+            <button class="tab-btn active" data-tab="performances">🎭 Показы</button>
+            <button class="tab-btn" data-tab="rehearsals">🎪 Репетиции</button>
+            <button class="tab-btn" data-tab="add">➕ Добавить событие</button>
+        </div>
+    }
+
+    <!-- Показы -->
+    <div id="tab-performances" class="tab-content @(isAdmin ? "active" : "")" style="@(!isAdmin ? "display: block;" : "")">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 class="card-title">🎭 @(isArtist ? "Мои спектакли" : "Ближайшие показы")</h3>
+            <span style="color: #aaa;">Всего: @(performances?.Count ?? 0)</span>
+        </div>
+
+        @if (performances != null && performances.Any())
+        {
+            <div class="card">
+                <div style="overflow-x: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Дата</th>
+                                <th>Время</th>
+                                <th>Спектакль</th>
+                                <th>Цена</th>
+                                <th>Статус</th>
+                                @if (isAdmin)
+                                {
+                                    <th>Действия</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var perf in performances)
+                            {
+                                <tr>
+                                    <td>@perf.Datetime.ToString("dd.MM.yyyy")</td>
+                                    <td>@perf.Datetime.ToString("HH:mm")</td>
+                                    <td>@perf.Play?.Title</td>
+                                    <td>@perf.BasePrice ₽</td>
+                                    <td>
+                                        <span class="status-badge @(perf.Status == "запланирован" ? "status-active" : "status-inactive")">
+                                            @perf.Status
+                                        </span>
+                                    </td>
+                                    @if (isAdmin)
+                                    {
+                                        <td>
+                                            <a href="/Dashboard/EditPerformance/@perf.Id" class="btn-edit">✏️</a>
+                                            <a href="/Dashboard/DeletePerformance/@perf.Id" class="btn-delete" onclick="return confirm('Удалить показ?')">🗑️</a>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card">
+                <p style="text-align: center; padding: 30px;">Нет запланированных показов</p>
+            </div>
+        }
+    </div>
+
+    @if (isAdmin)
+    {
+        <!-- Репетиции -->
+        <div id="tab-rehearsals" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 class="card-title">🎪 Репетиции</h3>
+                <span style="color: #aaa;">Всего: @(rehearsals?.Count ?? 0)</span>
+            </div>
+
+            @if (rehearsals != null && rehearsals.Any())
+            {
+                <div class="card">
+                    <div style="overflow-x: auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th>Время</th>
+                                    <th>Спектакль</th>
+                                    <th>Место</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var rehearsal in rehearsals)
+                                {
+                                    <tr>
+                                        <td>@rehearsal.Datetime.ToString("dd.MM.yyyy")</td>
+                                        <td>@rehearsal.Datetime.ToString("HH:mm")</td>
+                                        <td>@rehearsal.Play?.Title</td>
+                                        <td>@rehearsal.Location</td>
+                                        <td>
+                                            <a href="#" class="btn-edit" onclick="alert('Редактирование репетиции')">✏️</a>
+                                            <a href="#" class="btn-delete" onclick="alert('Удалить репетицию')">🗑️</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card">
+                    <p style="text-align: center; padding: 30px;">Репетиций пока нет</p>
+                </div>
+            }
+        </div>
+
+        <!-- Добавление события -->
+        <div id="tab-add" class="tab-content">
+            <div class="card">
+                <h3 class="card-title">➕ Добавить новое событие</h3>
+
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert-success">@TempData["Success"]</div>
+                }
+
+                <form method="post" action="/Dashboard/AddEvent" id="addEventForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Тип события *</label>
+                            <select name="eventType" id="eventType" class="form-control" required>
+                                <option value="performance">🎭 Показ</option>
+                                <option value="rehearsal">🎪 Репетиция</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Спектакль *</label>
+                            <select name="playId" id="playId" class="form-control" required>
+                                <option value="">-- Выберите спектакль --</option>
+                                @if (ViewBag.Plays != null)
+                                {
+                                    foreach (var play in ViewBag.Plays)
+                                    {
+                                        <option value="@play.Id">@play.Title</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Дата *</label>
+                            <input type="date" name="date" id="date" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Время *</label>
+                            <input type="time" name="time" id="time" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group" id="priceGroup">
+                        <label>Базовая цена (₽)</label>
+                        <input type="number" name="basePrice" id="basePrice" class="form-control" step="100" placeholder="1000">
+                    </div>
+                    <div class="form-group" id="locationGroup" style="display: none;">
+                        <label>Место проведения *</label>
+                        <select name="location" id="location" class="form-control">
+                            <option value="Большая сцена">Большая сцена</option>
+                            <option value="Малая сцена">Малая сцена</option>
+                            <option value="Камерный зал Амонд">Камерный зал Амонд</option>
+                            <option value="Зимний сад Стыр Ныхас">Зимний сад Стыр Ныхас</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 15px; margin-top: 20px;">
+                        <button type="submit" class="btn-primary">💾 Добавить событие</button>
+                        <button type="reset" class="btn-secondary">Очистить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .tab-btn {
+        background: transparent;
+        border: none;
+        padding: 10px 20px;
+        color: #aaa;
+        cursor: pointer;
+        font-size: 16px;
+        border-bottom: 2px solid transparent;
+    }
+    .tab-btn:hover {
+        color: white;
+    }
+    .tab-btn.active {
+        color: #7b68ee;
+        border-bottom-color: #7b68ee;
+    }
+    .tab-content {
+        display: none;
+    }
+    .tab-content.active {
+        display: block;
+    }
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #ccc;
+    }
+    .form-control {
+        width: 100%;
+        padding: 10px 15px;
+        border-radius: 8px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(123,104,238,0.3);
+        color: white;
+    }
+    .btn-edit, .btn-delete {
+        padding: 5px 10px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 14px;
+        display: inline-block;
+        margin: 0 3px;
+    }
+    .btn-edit { background: rgba(52,152,219,0.2); color: #3498db; }
+    .btn-delete { background: rgba(231,76,60,0.2); color: #e74c3c; }
+    .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; }
+    .status-active { background: rgba(46,204,113,0.2); color: #2ecc71; }
+    .status-inactive { background: rgba(231,76,60,0.2); color: #e74c3c; }
+    .btn-secondary {
+        padding: 10px 24px;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(123,104,238,0.5);
+        border-radius: 8px;
+        color: white;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .card {
+        background: rgba(255,255,255,0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(123,104,238,0.2);
+        border-radius: 16px;
+        padding: 24px;
+    }
+    .card-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #7b68ee;
+    }
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .data-table th, .data-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .data-table th {
+        color: #7b68ee;
+        font-weight: 600;
+    }
+    .alert-success {
+        background: rgba(46,204,113,0.2);
+        border: 1px solid #2ecc71;
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 20px;
+        color: #6fdf9b;
+    }
+</style>
+
+@if (isAdmin)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var tabs = document.querySelectorAll('.tab-btn');
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].addEventListener('click', (function(btn) {
+                    return function() {
+                        var tabId = btn.dataset.tab;
+                        var allBtns = document.querySelectorAll('.tab-btn');
+                        var allContents = document.querySelectorAll('.tab-content');
+
+                        // Убираем активные классы
+                        for (var j = 0; j < allBtns.length; j++) {
+                            allBtns[j].classList.remove('active');
+                        }
+                        for (var j = 0; j < allContents.length; j++) {
+                            allContents[j].classList.remove('active');
+                        }
+
+                        // Добавляем активные классы текущему элементу
+                        btn.classList.add('active');
+                        var targetTab = document.getElementById('tab-' + tabId);
+                        if (targetTab) {
+                            targetTab.classList.add('active');
+                        }
+                    };
+                })(tabs[i]));
+            }
+
+            var eventTypeSelect = document.getElementById('eventType');
+            var priceGroupDiv = document.getElementById('priceGroup');
+            var locationGroupDiv = document.getElementById('locationGroup');
+
+            function toggleEventFields() {
+                if (!eventTypeSelect) return;
+
+                if (eventTypeSelect.value === 'performance') {
+                    if (priceGroupDiv) priceGroupDiv.style.display = 'block';
+                    if (locationGroupDiv) locationGroupDiv.style.display = 'none';
+                } else {
+                    if (priceGroupDiv) priceGroupDiv.style.display = 'none';
+                    if (locationGroupDiv) locationGroupDiv.style.display = 'block';
+                }
+            }
+
+            if (eventTypeSelect) {
+                eventTypeSelect.addEventListener('change', toggleEventFields);
+                // Вызываем сразу, чтобы установить правильное состояние при загрузке
+                toggleEventFields();
+            }
+        });
+    </script>
+}

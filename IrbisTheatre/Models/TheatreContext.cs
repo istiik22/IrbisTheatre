@@ -30,6 +30,9 @@ public class TheatreContext : DbContext
     public DbSet<Property> Properties { get; set; }
     public DbSet<EmployerProperty> EmployerProperties { get; set; }
 
+    public DbSet<Rehearsal> Rehearsals { get; set; }
+    public DbSet<RehearsalParticipant> RehearsalParticipants { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Настройка уникальных ключей и ограничений
